@@ -44,6 +44,44 @@
 
         /* FEATHER BUTTON */
         .feather-btn { position: fixed; bottom: 35px; right: 25px; width: 70px; height: 70px; background: var(--hv); color: #000; border-radius: 25px; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 40px rgba(16,185,129,0.4); z-index: 5000; cursor: pointer; }
+        /* TÜM SİTEYİ KAYDIRILABİLİR YAPAN KOD */
+
+/* 1. Sayfanın en dış katmanını serbest bırak */
+html, body {
+    height: 100% !important;
+    overflow-y: auto !important; /* Dikey kaydırmayı her yerde açar */
+    overflow-x: hidden !important; /* Sağa sola kaymayı engeller */
+    margin: 0;
+    padding: 0;
+    background-color: black;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* 2. Tüm ana bölümleri (Mesajlaşma, Profil, Ana Sayfa) kapsayan genel kural */
+.page-section, #main-content, #profile-page, #chat-container {
+    height: auto !important;
+    min-height: 100vh !important;
+    overflow-y: visible !important; /* İçerik uzadıkça aşağı kaymasını sağlar */
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 80px; /* Alt menüye çarpmaması için güvenli alan */
+}
+
+/* 3. Mesajlaşma alanı için özel kaydırma */
+#messages-list {
+    flex: 1;
+    overflow-y: auto !important;
+    padding: 15px;
+}
+
+/* 4. Mouse tekerleği (Scrollbar) görünümü (İsteğe bağlı - Siyah temaya uygun) */
+::-webkit-scrollbar {
+    width: 5px;
+}
+::-webkit-scrollbar-thumb {
+    background: #27272a;
+    border-radius: 10px;
+}
     </style>
 </head>
 <body>
@@ -255,63 +293,3 @@
     </script>
 </body>
 </html>
-<style>
-    /* 1. TÜM SAYFAYI SERBEST BIRAK */
-    html, body {
-        height: 100% !important;
-        overflow-y: auto !important; /* Dikey kaydırmayı her yerde açar */
-        overflow-x: hidden !important; /* Yatay kaymayı engeller */
-        margin: 0;
-        padding: 0;
-        background-color: black !important;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    /* 2. ANA TAŞIYICI VE TÜM SAYFALAR (Profil, Mesajlar, Ana Sayfa) */
-    /* Eğer div id'lerin farklıysa buraya virgül ekleyip onları da yazabilirsin */
-    #main-content, #profile-page, #chat-container, .page-section, #auth-gate {
-        height: auto !important;
-        min-height: 100vh !important;
-        overflow-y: visible !important; /* İçerik uzadıkça aşağı kaymayı sağlar */
-        display: flex !important;
-        flex-direction: column !important;
-        position: relative !important; /* Çakılı kalmayı engeller */
-        padding-bottom: 100px !important; /* Alt menüye çarpmaması için alan */
-    }
-
-    /* 3. MESAJLAŞMA LİSTESİ İÇİN ÖZEL KAYDIRMA */
-    /* Mesajlar çoğaldıkça kendi içinde de kayabilmesi için */
-    #messages-list, .message-history {
-        flex: 1 !important;
-        overflow-y: auto !important;
-        max-height: none !important; /* Yükseklik sınırını kaldırır */
-    }
-
-    /* 4. GİRİŞ EKRANI (AUTH GATE) ÖZEL AYAR */
-    #auth-gate {
-        position: absolute !important; /* Fixed yerine absolute kaydırmayı kolaylaştırır */
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 20000;
-    }
-
-    /* 5. GÖRÜNMEYEN AMA KAYDIRMAYI TETİKLEYEN ALT BOŞLUK */
-    .scroll-buffer {
-        height: 50px;
-        width: 100%;
-        flex-shrink: 0;
-    }
-
-    /* 6. MOUSE TEKERLEĞİ GÖRÜNÜMÜ (Siyah Temaya Uygun) */
-    ::-webkit-scrollbar {
-        width: 6px;
-    }
-    ::-webkit-scrollbar-track {
-        background: #000;
-    }
-    ::-webkit-scrollbar-thumb {
-        background: #27272a;
-        border-radius: 10px;
-    }
-</style>
