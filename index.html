@@ -1,94 +1,208 @@
-<!doctype html>
-<html lang="tr">
+<!DOCTYPE html>
+<html lang="tr" class="scroll-smooth">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-    <title>Hayravesile | Instagram Edition</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hayra Vesile | HV Prime Diamond</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-        
-        body { background-color: #fafafa; color: #262626; font-family: 'Roboto', sans-serif; margin: 0; }
-        .dark body { background-color: #000; color: #fff; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap');
 
-        /* Navigasyon Cam Efekti */
-        header { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid #dbdbdb; }
-        .dark header { background: rgba(0,0,0,0.9); border-bottom: 1px solid #262626; }
+        :root {
+            --hv-green: #10b981; /* Senin özel yeşilin */
+            --hv-dark: #064e3b;
+            --hv-glow: rgba(16, 185, 129, 0.3);
+            --bg: #fafafa;
+            --card: #ffffff;
+            --text: #0f172a;
+            --border: #f1f5f9;
+        }
 
-        /* Post Tasarımı */
-        .post-container { max-width: 470px; margin: 0 auto; padding-top: 15px; }
-        .post-card { background: #fff; border: 1px solid #dbdbdb; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
-        .dark .post-card { background: #000; border: 1px solid #262626; }
+        .dark {
+            --bg: #000000;
+            --card: #0a0a0a;
+            --text: #f8fafc;
+            --border: #1a1a1a;
+        }
 
-        /* Medya - Instagram Kare Formu */
-        .post-img-box { width: 100%; aspect-ratio: 1/1; background: #efefef; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .post-img-box img, .post-img-box video { width: 100%; height: 100%; object-fit: cover; }
+        * { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; margin: 0; }
 
-        /* Alt Navigasyon */
-        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; 
-                      background: #fff; border-top: 1px solid #dbdbdb; display: flex; justify-content: space-around; padding: 12px; z-index: 5000; }
-        .dark .bottom-nav { background: #000; border-top: 1px solid #262626; }
+        /* HV Logo Style */
+        .hv-logo {
+            font-size: 28px; font-weight: 900; color: var(--hv-green);
+            letter-spacing: -2px; display: flex; align-items: center; gap: 8px;
+        }
+        .hv-logo span { background: var(--hv-green); color: white; padding: 2px 8px; border-radius: 8px; }
 
-        .hidden { display: none; }
-        .btn-plus { width: 24px; height: 24px; border: 2px solid currentColor; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+        /* Modern UI Glassmorphism */
+        .glass-nav {
+            position: sticky; top: 0; z-index: 2000;
+            background: rgba(var(--card), 0.8); backdrop-filter: blur(25px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Post Card Evolution */
+        .post-card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 28px; margin-bottom: 30px; overflow: hidden;
+            box-shadow: 0 10px 40px -15px rgba(0,0,0,0.05);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .post-card:hover { transform: translateY(-5px); }
+
+        .media-viewport {
+            width: 100%; aspect-ratio: 1/1; background: #000;
+            position: relative; display: flex; align-items: center; justify-content: center;
+        }
+        .media-viewport img, .media-viewport video { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Follow Button Emerald */
+        .btn-follow {
+            background: var(--hv-green); color: white; padding: 6px 16px;
+            border-radius: 12px; font-weight: 800; font-size: 12px;
+            box-shadow: 0 4px 12px var(--hv-glow);
+        }
+        .btn-following {
+            background: var(--border); color: var(--text); padding: 6px 16px;
+            border-radius: 12px; font-weight: 800; font-size: 12px;
+        }
+
+        /* Fixed Navigation System */
+        .hv-dock {
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 450px; background: rgba(var(--card), 0.95);
+            backdrop-filter: blur(20px); border: 1px solid var(--border);
+            border-radius: 40px; padding: 14px 25px; display: flex;
+            justify-content: space-around; align-items: center; z-index: 9999;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        }
+
+        .dock-btn { font-size: 24px; color: var(--text); cursor: pointer; transition: 0.3s; position: relative; }
+        .dock-btn:hover { color: var(--hv-green); transform: translateY(-3px); }
+        .dock-btn.active { color: var(--hv-green); }
+
+        .add-trigger {
+            width: 65px; height: 65px; background: var(--hv-green);
+            color: white; border-radius: 24px; display: flex; align-items: center;
+            justify-content: center; font-size: 30px; transform: translateY(-40px);
+            border: 8px solid var(--bg); box-shadow: 0 15px 35px var(--hv-glow);
+        }
+
+        /* Modal Architecture */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(15px); z-index: 10000; display: none;
+            align-items: center; justify-content: center; padding: 20px;
+        }
+        .modal-content {
+            background: var(--card); width: 100%; max-width: 500px;
+            border-radius: 45px; overflow: hidden; border: 1px solid var(--border);
+            animation: modalIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes modalIn { from { transform: scale(0.8) translateY(100px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+
+        /* Explore Grid */
+        .grid-layout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+        .grid-cell { aspect-ratio: 1/1; cursor: pointer; position: relative; overflow: hidden; background: #eee; }
+        .grid-cell img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .grid-cell:hover img { transform: scale(1.1); filter: brightness(0.8); }
+
+        /* Animations */
+        .heart-pop {
+            position: absolute; font-size: 100px; color: white;
+            animation: pop 0.8s ease-out forwards; pointer-events: none; z-index: 50;
+        }
+        @keyframes pop { 0% { transform: scale(0); opacity: 0; } 50% { transform: scale(1.5); opacity: 1; } 100% { transform: scale(1); opacity: 0; } }
+
+        .loading-screen {
+            position: fixed; inset: 0; background: var(--bg); z-index: 99999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
     </style>
 </head>
-<body class="pb-20">
+<body class="antialiased">
 
-    <header class="sticky top-0 z-[1000] p-4 flex justify-between items-center max-w-[500px] mx-auto">
-        <h1 class="text-2xl font-bold italic tracking-tighter" style="font-family: serif;">Instagram</h1>
-        <div class="flex gap-5 text-xl">
-            <i class="fa-regular fa-heart cursor-pointer"></i>
-            <i class="fa-regular fa-paper-plane cursor-pointer"></i>
+    <div id="loader" class="loading-screen">
+        <div class="hv-logo mb-4"><span>HV</span> Hayra Vesile</div>
+        <div class="w-12 h-1 border-2 border-emerald-500 rounded-full animate-pulse"></div>
+    </div>
+
+    <header class="glass-nav px-6 py-4 flex justify-between items-center max-w-[600px] mx-auto">
+        <div class="hv-logo"><span>HV</span> <div class="hidden sm:block">Hayra Vesile</div></div>
+        <div class="flex items-center gap-6">
+            <i class="fa-regular fa-square-plus text-2xl cursor-pointer" onclick="openUpload()"></i>
+            <div class="relative">
+                <i class="fa-regular fa-bell text-2xl cursor-pointer"></i>
+                <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+            </div>
+            <i class="fa-regular fa-paper-plane text-2xl cursor-pointer"></i>
         </div>
     </header>
 
-    <main class="post-container">
-        <div class="flex gap-4 overflow-x-auto p-4 mb-2 scrollbar-hide bg-white dark:bg-black border-b dark:border-zinc-800" id="stories">
-            <div class="flex-shrink-0 flex flex-col items-center gap-1">
-                <div class="w-16 h-16 rounded-full p-[2px] bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600">
-                    <img src="https://via.placeholder.com/150" id="user-avatar-story" class="w-full h-full rounded-full border-2 border-white dark:border-black object-cover">
+    <main class="max-w-[600px] mx-auto pb-40 min-h-screen">
+        <section class="flex gap-5 overflow-x-auto p-6 no-scrollbar" id="story-track">
+            <div class="flex flex-col items-center gap-2">
+                <div class="w-[75px] h-[75px] rounded-full p-1 bg-gradient-to-tr from-emerald-500 to-yellow-400">
+                    <img src="" id="me-avatar-story" class="w-full h-full rounded-full border-2 border-white dark:border-black object-cover">
                 </div>
-                <span class="text-xs">Hikayen</span>
+                <span class="text-[10px] font-bold opacity-40">HİKAYEN</span>
             </div>
-        </div>
+        </section>
 
-        <div id="main-feed" class="space-y-4">
-            <div class="p-20 text-center text-gray-400">Yükleniyor...</div>
+        <div id="feed-view" class="px-4 space-y-6"></div>
+        <div id="explore-view" class="hidden"><div class="grid-layout" id="explore-grid"></div></div>
+        <div id="profile-view" class="hidden p-6 text-center">
+            <div class="w-28 h-28 mx-auto rounded-full p-1 bg-emerald-500 mb-4 shadow-xl shadow-emerald-500/20">
+                <img id="p-avatar-big" class="w-full h-full rounded-full object-cover border-4 border-white dark:border-black">
+            </div>
+            <h2 id="p-name" class="text-3xl font-black mb-2 tracking-tighter">Yükleniyor...</h2>
+            <div class="flex justify-center gap-8 my-8 border-y dark:border-zinc-800 py-6">
+                <div><p class="font-black text-xl" id="my-p-count">0</p><p class="text-[10px] opacity-40 font-bold uppercase">PAYLAŞIM</p></div>
+                <div><p class="font-black text-xl" id="follower-count">0</p><p class="text-[10px] opacity-40 font-bold uppercase">TAKİPÇİ</p></div>
+                <div><p class="font-black text-xl" id="following-count">0</p><p class="text-[10px] opacity-40 font-bold uppercase">TAKİP</p></div>
+            </div>
+            <div class="grid-layout" id="profile-grid"></div>
         </div>
     </main>
 
-    <div id="upload-modal" class="hidden fixed inset-0 z-[6000] bg-black/70 flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-zinc-900 w-full max-w-md rounded-xl overflow-hidden shadow-2xl">
-            <div class="p-3 border-b dark:border-zinc-800 flex justify-between items-center font-bold">
-                <button onclick="toggleUpload(false)" class="text-sm">İptal</button>
-                <span>Yeni Gönderi</span>
-                <button onclick="startUpload()" class="text-blue-500 text-sm" id="btn-share">Paylaş</button>
+    <nav class="hv-dock">
+        <i class="fa-solid fa-house dock-btn active" onclick="switchView('feed')"></i>
+        <i class="fa-solid fa-magnifying-glass dock-btn" onclick="switchView('explore')"></i>
+        <div class="add-trigger cursor-pointer" onclick="openUpload()">
+            <i class="fa-solid fa-plus"></i>
+        </div>
+        <i class="fa-solid fa-clapperboard dock-btn"></i>
+        <div id="p-toggle" onclick="switchView('profile')" class="w-8 h-8 rounded-full border-2 border-emerald-500 overflow-hidden cursor-pointer shadow-lg transition-transform active:scale-90"></div>
+    </nav>
+
+    <div id="modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="p-6 flex justify-between items-center border-b dark:border-zinc-800 bg-emerald-500 text-white">
+                <button onclick="closeUpload()" class="font-bold opacity-70">İptal</button>
+                <span class="font-black text-xl">HV PAYLAŞIM</span>
+                <button onclick="startPublish()" id="share-btn" class="bg-white text-emerald-500 px-5 py-1.5 rounded-2xl font-black text-sm shadow-lg">PAYLAŞ</button>
             </div>
-            <div class="p-6 text-center">
-                <input type="file" id="file-input" class="hidden" accept="image/*,video/*">
-                <div onclick="document.getElementById('file-input').click()" class="cursor-pointer p-10 border-2 border-dashed border-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800">
-                    <i class="fa-solid fa-photo-film text-4xl text-gray-400 mb-2"></i>
-                    <p class="text-sm font-medium">Bilgisayardan seç</p>
+            <div class="p-8 space-y-6">
+                <div class="w-full h-64 bg-zinc-50 dark:bg-zinc-900 border-4 border-dashed border-emerald-500/20 rounded-[40px] flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-500/5 transition-all group" onclick="document.getElementById('f-in').click()">
+                    <i class="fa-solid fa-cloud-arrow-up text-5xl text-emerald-500 mb-4 group-hover:-translate-y-2 transition-transform"></i>
+                    <p class="font-black text-emerald-600/50 uppercase tracking-widest text-xs" id="f-label">DOSYAYI BURAYA BIRAK</p>
+                    <input type="file" id="f-in" class="hidden" accept="image/*,video/*" onchange="preview(this)">
                 </div>
-                <textarea id="post-desc" placeholder="Açıklama yaz..." class="w-full mt-4 p-2 bg-transparent outline-none resize-none border-b dark:border-zinc-800 h-24"></textarea>
+                <textarea id="cap" placeholder="Fikirlerini paylaş, @etiketle, #hashtag ekle..." class="w-full h-32 bg-transparent text-xl font-bold outline-none resize-none placeholder:opacity-20"></textarea>
             </div>
         </div>
     </div>
 
-    <nav class="bottom-nav">
-        <i class="fa-solid fa-house text-xl cursor-pointer" onclick="location.reload()"></i>
-        <i class="fa-solid fa-magnifying-glass text-xl cursor-pointer"></i>
-        <div class="btn-plus cursor-pointer" onclick="toggleUpload(true)"><i class="fa-solid fa-plus text-xs"></i></div>
-        <i class="fa-solid fa-clapperboard text-xl cursor-pointer"></i>
-        <div id="nav-profile" onclick="document.documentElement.classList.toggle('dark')" class="w-6 h-6 rounded-full border border-gray-300 overflow-hidden cursor-pointer"></div>
-    </nav>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, arrayUnion, arrayRemove, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
         const firebaseConfig = {
@@ -105,72 +219,159 @@
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        onAuthStateChanged(auth, user => {
-            if(user) {
-                document.getElementById('user-avatar-story').src = user.photoURL;
-                document.getElementById('nav-profile').innerHTML = `<img src="${user.photoURL}" class="w-full h-full object-cover">`;
-                renderPosts();
+        let user = null;
+        let myFollowing = [];
+
+        onAuthStateChanged(auth, u => {
+            if(u) {
+                user = u;
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('me-avatar-story').src = u.photoURL;
+                document.getElementById('p-toggle').innerHTML = `<img src="${u.photoURL}" class="w-full h-full object-cover">`;
+                document.getElementById('p-avatar-big').src = u.photoURL;
+                document.getElementById('p-name').innerText = u.displayName;
+                syncProfile();
+                engine();
             } else { signInWithPopup(auth, new GoogleAuthProvider()); }
         });
 
-        window.toggleUpload = (val) => document.getElementById('upload-modal').classList.toggle('hidden', !val);
+        async function syncProfile() {
+            const uRef = doc(db, "users", user.uid);
+            const uSnap = await getDoc(uRef);
+            if(!uSnap.exists()) {
+                await setDoc(uRef, { name: user.displayName, avatar: user.photoURL, following: [], followers: [] });
+            } else {
+                myFollowing = uSnap.data().following || [];
+                document.getElementById('following-count').innerText = myFollowing.length;
+                document.getElementById('follower-count').innerText = uSnap.data().followers?.length || 0;
+            }
+        }
 
-        window.startUpload = async () => {
-            const file = document.getElementById('file-input').files[0];
-            const desc = document.getElementById('post-desc').value;
-            if(!file) return alert("Lütfen bir fotoğraf seçin!");
-
-            document.getElementById('btn-share').innerText = "...";
-            const sRef = ref(storage, 'posts/' + Date.now() + "_" + file.name);
-            const uploadTask = await uploadBytes(sRef, file);
-            const url = await getDownloadURL(uploadTask.ref);
-
-            await addDoc(collection(db, "posts"), {
-                media: url, desc, author: auth.currentUser.displayName,
-                avatar: auth.currentUser.photoURL, likes: [], comments: [], time: serverTimestamp()
-            });
-            toggleUpload(false);
-            location.reload();
+        window.switchView = (v) => {
+            ['feed-view', 'explore-view', 'profile-view'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            document.getElementById(v + '-view').classList.remove('hidden');
+            document.querySelectorAll('.dock-btn').forEach(btn => btn.classList.remove('active'));
+            window.scrollTo({top:0, behavior:'smooth'});
         };
 
-        function renderPosts() {
-            onSnapshot(query(collection(db, "posts"), orderBy("time", "desc")), snap => {
-                const feed = document.getElementById('main-feed');
-                feed.innerHTML = '';
-                snap.forEach(ds => {
-                    const p = ds.data();
-                    const isLiked = p.likes?.includes(auth.currentUser.uid);
-                    feed.innerHTML += `
+        window.openUpload = () => document.getElementById('modal').style.display = 'flex';
+        window.closeUpload = () => document.getElementById('modal').style.display = 'none';
+
+        window.preview = (i) => { if(i.files[0]) document.getElementById('f-label').innerText = "SEÇİLDİ: " + i.files[0].name.slice(0,10); };
+
+        window.startPublish = async () => {
+            const file = document.getElementById('f-in').files[0];
+            const cap = document.getElementById('cap').value;
+            if(!file || !cap) return;
+
+            document.getElementById('share-btn').innerText = "...";
+            const sRef = ref(storage, `hv_diamond/${Date.now()}`);
+            const snap = await uploadBytes(sRef, file);
+            const url = await getDownloadURL(snap.ref);
+
+            await addDoc(collection(db, "posts"), {
+                url, cap, user: user.displayName, avatar: user.photoURL, uid: user.uid,
+                likes: [], comments: [], type: file.type.split('/')[0], date: serverTimestamp()
+            });
+
+            closeUpload();
+            confetti({ particleCount: 200, spread: 70, colors: ['#10b981', '#ffffff'] });
+        };
+
+        function engine() {
+            onSnapshot(query(collection(db, "posts"), orderBy("date", "desc")), snap => {
+                const feed = document.getElementById('feed-view');
+                const explore = document.getElementById('explore-grid');
+                const profile = document.getElementById('profile-grid');
+                let count = 0;
+                feed.innerHTML = ''; explore.innerHTML = ''; profile.innerHTML = '';
+
+                snap.forEach(d => {
+                    const p = d.data();
+                    const pid = d.id;
+                    const isLiked = p.likes?.includes(user.uid);
+                    const isMe = p.uid === user.uid;
+                    const isFollowed = myFollowing.includes(p.uid);
+
+                    // GİZLİLİK FİLTRESİ: Sadece takip ettiklerini ve kendini gör
+                    if(!isMe && !isFollowed) {
+                        explore.innerHTML += `<div class="grid-cell"><img src="${p.url}" onclick="handleFollow('${p.uid}')"></div>`;
+                        return;
+                    }
+
+                    if(isMe) count++;
+
+                    // RICH TEXT: @ ve # renklendirme
+                    const rich = p.cap.replace(/(@\w+)/g, '<span class="text-emerald-500 font-bold">$1</span>')
+                                      .replace(/(#\w+)/g, '<span class="text-blue-500 font-bold">$1</span>');
+
+                    const card = `
                         <div class="post-card">
-                            <div class="p-3 flex items-center justify-between">
-                                <div class="flex items-center gap-2">
-                                    <img src="${p.avatar}" class="w-8 h-8 rounded-full border border-gray-200">
-                                    <span class="font-bold text-sm">${p.author}</span>
+                            <div class="p-4 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <img src="${p.avatar}" class="w-10 h-10 rounded-full border-2 border-emerald-500 p-0.5">
+                                    <div class="flex flex-col leading-none">
+                                        <span class="font-black text-sm tracking-tight">${p.user}</span>
+                                        <span class="text-[9px] font-bold text-emerald-600 uppercase">TAKİPÇİN</span>
+                                    </div>
                                 </div>
-                                <i class="fa-solid fa-ellipsis-h text-xs"></i>
+                                ${!isMe ? `<button onclick="handleFollow('${p.uid}')" class="${isFollowed ? 'btn-following' : 'btn-follow'}">${isFollowed ? 'Takip' : 'Takip Et'}</button>` : '<i class="fa-solid fa-ellipsis-v opacity-20"></i>'}
                             </div>
-                            <div class="post-img-box" ondblclick="like('${ds.id}', ${JSON.stringify(p.likes)})">
-                                ${p.media.includes('.mp4') ? `<video src="${p.media}" autoplay muted loop></video>` : `<img src="${p.media}">`}
+                            <div class="media-viewport" ondblclick="handleLike('${pid}', ${JSON.stringify(p.likes)}, true)">
+                                ${p.type === 'video' ? `<video src="${p.url}" autoplay muted loop></video>` : `<img src="${p.url}" loading="lazy">`}
+                                <div id="heart-p-${pid}"></div>
                             </div>
-                            <div class="p-3">
-                                <div class="flex gap-4 text-xl mb-2">
-                                    <i class="${isLiked ? 'fa-solid fa-heart text-red-500' : 'fa-regular fa-heart'} cursor-pointer" onclick="like('${ds.id}', ${JSON.stringify(p.likes)})"></i>
-                                    <i class="fa-regular fa-comment"></i>
-                                    <i class="fa-regular fa-paper-plane"></i>
+                            <div class="p-5">
+                                <div class="flex justify-between items-center mb-6">
+                                    <div class="flex gap-6 text-2xl">
+                                        <i class="${isLiked ? 'fa-solid fa-heart text-red-500 scale-125' : 'fa-regular fa-heart'} cursor-pointer transition-all" onclick="handleLike('${pid}', ${JSON.stringify(p.likes)})"></i>
+                                        <i class="fa-regular fa-comment-dots hover:text-emerald-500"></i>
+                                        <i class="fa-regular fa-paper-plane hover:text-emerald-500"></i>
+                                    </div>
+                                    <i class="fa-regular fa-bookmark"></i>
                                 </div>
-                                <p class="font-bold text-sm mb-1">${p.likes?.length || 0} beğenme</p>
-                                <p class="text-sm"><span class="font-bold mr-2">${p.author}</span>${p.desc}</p>
-                                <p class="text-[10px] text-gray-400 uppercase mt-2">Şimdi Paylaşıldı</p>
+                                <p class="font-black text-sm mb-2">${p.likes?.length || 0} BEĞENİ</p>
+                                <p class="text-[15px] leading-relaxed"><span class="font-black mr-2 text-emerald-600">${p.user}</span>${rich}</p>
                             </div>
                         </div>`;
+                    
+                    feed.innerHTML += card;
+                    if(isMe) profile.innerHTML += `<div class="grid-cell"><img src="${p.url}"></div>`;
                 });
+                document.getElementById('my-p-count').innerText = count;
             });
         }
 
-        window.like = async (id, likes) => {
+        window.handleLike = async (id, likes, dbClick) => {
             const refDoc = doc(db, "posts", id);
-            likes?.includes(auth.currentUser.uid) ? await updateDoc(refDoc, { likes: arrayRemove(auth.currentUser.uid) }) : await updateDoc(refDoc, { likes: arrayUnion(auth.currentUser.uid) });
+            if(dbClick) {
+                const b = document.getElementById(`heart-p-${id}`);
+                b.innerHTML = '<i class="fa-solid fa-heart heart-pop"></i>';
+                setTimeout(() => b.innerHTML = '', 800);
+            }
+            if(likes.includes(user.uid) && !dbClick) {
+                await updateDoc(refDoc, { likes: arrayRemove(user.uid) });
+            } else if(!likes.includes(user.uid)) {
+                await updateDoc(refDoc, { likes: arrayUnion(user.uid) });
+            }
         };
+
+        window.handleFollow = async (targetUid) => {
+            if(targetUid === user.uid) return;
+            const myRef = doc(db, "users", user.uid);
+            const targetRef = doc(db, "users", targetUid);
+
+            if(myFollowing.includes(targetUid)) {
+                await updateDoc(myRef, { following: arrayRemove(targetUid) });
+                await updateDoc(targetRef, { followers: arrayRemove(user.uid) });
+            } else {
+                await updateDoc(myRef, { following: arrayUnion(targetUid) });
+                await updateDoc(targetRef, { followers: arrayUnion(user.uid) });
+                Swal.fire({ title: 'Takip Edildi!', text: 'Artık paylaşımları akışında göreceksin.', icon: 'success', toast: true, position: 'top-right', showConfirmButton: false, timer: 2000 });
+            }
+            syncProfile();
+        };
+
     </script>
 </body>
 </html>
