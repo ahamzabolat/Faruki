@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hayra Vesile | Ultimate V571</title>
+    <title>Hayra Vesile | V571 Elite</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -12,144 +12,118 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@1,900&display=swap');
         
-        :root { --hv: #10b981; --bg: #000; --card: #0d0d0f; --border: #1e1e21; --dis: #ef4444; }
+        :root { --hv: #10b981; --bg: #000; }
         
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: #f4f4f5; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+        body { background: var(--bg); color: #f4f4f5; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* LOGO VE ÜST BAR */
         .stilli-logo { font-family: 'Playfair Display', serif; font-style: italic; background: linear-gradient(to right, #10b981, #34d399, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 200% auto; animation: shine 3s linear infinite; }
         @keyframes shine { to { background-position: 200% center; } }
 
-        /* SIDEBAR SİSTEMİ */
-        .sidebar { position: fixed; left: -320px; top: 0; width: 300px; height: 100%; background: #050505; border-right: 1px solid rgba(16,185,129,0.15); z-index: 10000; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); padding: 50px 25px; display: flex; flex-direction: column; }
-        .sidebar.active { left: 0; box-shadow: 20px 0 100px rgba(0,0,0,1); }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); z-index: 9999; display: none; }
+        /* KAYDIRMA ALANLARI */
+        .scroll-v { flex: 1; overflow-y: scroll; padding-bottom: 120px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .scroll-v::-webkit-scrollbar { display: none; }
+
+        /* KART TASARIMI */
+        .hv-card { border-radius: 32px; padding: 25px; margin: 18px; border: 1px solid rgba(255,255,255,0.05); position: relative; transition: 0.3s; }
+        .vesile-tag { font-size: 10px; font-weight: 800; color: #fff; letter-spacing: 1px; margin-top: 4px; display: block; opacity: 0.9; text-transform: uppercase; }
+
+        /* RENK SEÇİCİ */
+        .color-dot { width: 45px; height: 45px; border-radius: 14px; cursor: pointer; border: 3px solid transparent; transition: 0.2s; }
+        .color-dot.active { border-color: white; transform: scale(1.1); }
+
+        /* SIDEBAR */
+        .sidebar { position: fixed; left: -320px; top: 0; width: 300px; height: 100%; background: #050505; border-right: 1px solid rgba(16,185,129,0.1); z-index: 10000; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); padding: 50px 25px; }
+        .sidebar.active { left: 0; box-shadow: 20px 0 100px #000; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 9999; display: none; }
+
+        /* DM MODAL */
+        .chat-view { position: fixed; inset: 0; background: #000; z-index: 11000; display: none; flex-direction: column; }
+        .msg-bubble { max-width: 80%; padding: 14px 18px; border-radius: 22px; font-size: 14.5px; font-weight: 600; line-height: 1.5; margin-bottom: 10px; }
+        .msg-me { align-self: flex-end; background: #fff; color: #000; border-bottom-right-radius: 4px; }
+        .msg-them { align-self: flex-start; background: #27272a; color: #fff; border-bottom-left-radius: 4px; }
+
+        /* KUŞ TÜYÜ BUTON */
+        .feather-btn { position: fixed; bottom: 35px; right: 25px; width: 68px; height: 68px; background: var(--hv); color: #000; border-radius: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(16,185,129,0.3); z-index: 5000; cursor: pointer; }
         
-        .nav-link { display: flex; align-items: center; gap: 15px; padding: 18px; border-radius: 22px; color: #52525b; font-weight: 700; transition: 0.3s; margin-bottom: 8px; cursor: pointer; }
-        .nav-link.active { color: var(--hv); background: rgba(16, 185, 129, 0.1); }
-
-        /* ANA AKIŞ VE KARTLAR */
-        .scroll-container { flex: 1; overflow-y: auto; padding-bottom: 120px; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
-        .scroll-container::-webkit-scrollbar { display: none; }
-
-        .hv-card { background: var(--card); border: 1px solid var(--border); border-radius: 35px; padding: 25px; margin: 20px 15px; position: relative; transition: transform 0.2s; }
-        .vesile-tag { font-size: 10px; font-weight: 800; color: var(--hv); letter-spacing: 1.5px; margin-top: 4px; display: block; opacity: 0.7; text-transform: uppercase; }
-
-        /* BEĞENİ ANİMASYONU */
-        .heart-btn { cursor: pointer; transition: 0.3s; position: relative; }
-        .heart-btn.animating i { animation: heartPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); color: #ef4444 !important; }
-        @keyframes heartPop { 0% { transform: scale(1); } 30% { transform: scale(1.6); } 60% { transform: scale(0.8); } 100% { transform: scale(1); } }
-
-        /* MESAJLAŞMA TASARIMI */
-        .chat-full { position: fixed; inset: 0; background: #000; z-index: 11000; display: none; flex-direction: column; }
-        .chat-header { height: 80px; padding: 0 25px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 15px; }
-        .message-area { flex: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 15px; background: radial-gradient(circle at top right, #0a0a0a, #000); }
-        .msg-bubble { max-width: 80%; padding: 15px 20px; border-radius: 25px; font-size: 15px; font-weight: 600; line-height: 1.5; animation: bubbleUp 0.3s ease-out; position: relative; }
-        @keyframes bubbleUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .msg-me { align-self: flex-end; background: var(--hv); color: #000; border-bottom-right-radius: 5px; }
-        .msg-them { align-self: flex-start; background: #27272a; color: #fff; border-bottom-left-radius: 5px; }
-
-        /* MESAJ GİRİŞ ALANI */
-        .chat-input-container { padding: 20px 25px 40px; background: #000; border-top: 1px solid var(--border); display: flex; gap: 12px; }
-        .chat-input { flex: 1; background: #18181b; border: 1px solid #27272a; border-radius: 25px; padding: 15px 20px; color: white; outline: none; font-weight: 600; }
-        .send-btn { width: 55px; height: 55px; background: var(--hv); color: #000; border-radius: 20px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .send-btn:active { transform: scale(0.9); }
-
-        /* YÜZEN BUTON */
-        .floating-action { position: fixed; bottom: 35px; right: 25px; width: 70px; height: 70px; background: var(--hv); color: #000; border-radius: 25px; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 40px rgba(16,185,129,0.3); z-index: 5000; cursor: pointer; transition: 0.3s; }
-        .floating-action:active { transform: scale(0.85); }
+        /* BEĞENİ ANİMASYON */
+        .pop { animation: popAnim 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popAnim { 0% { scale: 1; } 50% { scale: 1.4; } 100% { scale: 1; } }
     </style>
 </head>
 <body>
 
     <div id="overlay" class="overlay" onclick="UI.side()"></div>
 
-    <aside id="sidebar" class="sidebar">
-        <div class="mb-14 px-2">
-            <h2 class="stilli-logo text-4xl">Hayra Vesile</h2>
-            <p class="text-[10px] text-zinc-600 font-bold tracking-[0.4em] mt-2 uppercase">V571 Ultimate Pro</p>
-        </div>
-        <nav class="flex-1">
-            <div class="nav-link active" onclick="UI.tab('feed', this)"><i class="fa-solid fa-house-user text-xl"></i> Ana Akış</div>
-            <div class="nav-link" onclick="UI.tab('users', this)"><i class="fa-solid fa-comment-dots text-xl"></i> Mesajlar</div>
-            <div class="nav-link" onclick="UI.tab('profile', this)"><i class="fa-solid fa-user-circle text-xl"></i> Profilim</div>
+    <aside id="sidebar" class="sidebar flex flex-col">
+        <h2 class="stilli-logo text-4xl mb-12">Hayra Vesile</h2>
+        <nav class="flex-1 space-y-2">
+            <div class="p-4 rounded-2xl flex items-center gap-4 text-emerald-500 bg-emerald-500/10 font-bold" onclick="UI.tab('feed')"><i class="fa-solid fa-house"></i> Akış</div>
+            <div class="p-4 rounded-2xl flex items-center gap-4 text-zinc-500 font-bold" onclick="UI.tab('users')"><i class="fa-solid fa-paper-plane"></i> Mesajlar</div>
+            <div class="p-4 rounded-2xl flex items-center gap-4 text-zinc-500 font-bold" onclick="UI.tab('profile')"><i class="fa-solid fa-user"></i> Profil</div>
         </nav>
-        <div class="mt-auto p-4 bg-zinc-900/40 rounded-3xl border border-white/5" onclick="UI.about()">
-            <p id="quote-display" class="text-[12px] text-zinc-400 italic">"İyilik, görünmez bir bağdır."</p>
-        </div>
-        <button onclick="Auth.logout()" class="text-red-500/50 font-black text-[11px] mt-8 text-center uppercase tracking-widest">Çıkış Yap</button>
+        <button onclick="Auth.logout()" class="text-red-500/50 text-[10px] font-black tracking-widest uppercase">Çıkış Yap</button>
     </aside>
 
     <div id="auth-gate" class="fixed inset-0 bg-black z-[20000] flex flex-col items-center justify-center p-10 text-center">
-        <h1 class="stilli-logo text-7xl mb-12">Hayra Vesile</h1>
-        <p class="text-zinc-500 mb-10 font-bold tracking-widest uppercase text-xs">Bir iyilik yap, dünyaya can ver.</p>
-        <button onclick="Auth.login()" class="w-full max-w-sm bg-white text-black py-6 rounded-[30px] font-black text-xl shadow-2xl active:scale-95 transition">Google ile Giriş Yap</button>
+        <h1 class="stilli-logo text-6xl mb-12">Hayra Vesile</h1>
+        <button onclick="Auth.login()" class="w-full max-w-sm bg-white text-black py-5 rounded-[28px] font-black text-xl active:scale-95 transition">Google ile Giriş</button>
     </div>
 
-    <div id="app-view" class="flex-1 flex flex-col" style="display: none;">
-        <header class="h-20 px-6 border-b border-zinc-900 flex justify-between items-center bg-black/60 backdrop-blur-2xl sticky top-0 z-50">
+    <div id="app" class="flex-1 flex flex-col" style="display: none;">
+        <header class="h-20 px-6 border-b border-zinc-900 flex justify-between items-center bg-black/80 backdrop-blur-xl sticky top-0 z-50">
             <button onclick="UI.side()" class="text-emerald-500 text-2xl"><i class="fa-solid fa-bars-staggered"></i></button>
             <h1 class="stilli-logo text-2xl">Hayra Vesile</h1>
-            <div id="u-avatar" class="w-11 h-11 rounded-2xl overflow-hidden border border-white/10" onclick="UI.tab('profile')"></div>
+            <div id="u-avatar" class="w-10 h-10 rounded-xl overflow-hidden" onclick="UI.tab('profile')"></div>
         </header>
 
-        <main class="scroll-container">
-            <div id="tab-feed"><div id="post-feed"></div></div>
+        <main class="scroll-v">
+            <div id="tab-feed">
+                <div id="feed-container"></div>
+            </div>
             <div id="tab-users" class="hidden p-6 space-y-4">
-                <h2 class="text-2xl font-black mb-6">Kişilerle Tanış</h2>
+                <h2 class="text-2xl font-black mb-6">Mesajlaşma</h2>
                 <div id="user-list"></div>
             </div>
-            <div id="tab-profile" class="hidden p-8">
-                <div class="flex flex-col items-center mb-12 text-center">
-                    <img id="my-pfp-big" class="w-36 h-36 rounded-[50px] border-2 border-emerald-500 p-1.5 mb-6 shadow-2xl">
-                    <h2 id="my-name-big" class="text-3xl font-black uppercase tracking-tighter">...</h2>
-                    <p id="my-bio-big" class="text-sm text-zinc-500 mt-4 italic max-w-xs leading-relaxed">...</p>
+            <div id="tab-profile" class="hidden">
+                <div class="p-10 flex flex-col items-center text-center">
+                    <img id="p-img" class="w-32 h-32 rounded-[40px] border-4 border-emerald-500/20 p-1 mb-6">
+                    <h2 id="p-name" class="text-3xl font-black uppercase tracking-tighter">...</h2>
+                    <p id="p-bio" class="text-zinc-500 italic mt-2">...</p>
                 </div>
-                <div class="h-px bg-zinc-900 w-full mb-8"></div>
-                <h3 class="text-xs font-black text-emerald-500 uppercase tracking-widest mb-6">Paylaşımlarım</h3>
-                <div id="my-posts-feed"></div>
+                <div id="my-posts"></div>
             </div>
         </main>
 
-        <div onclick="UI.open('post-modal')" class="floating-action"><i class="fa-solid fa-plus text-3xl"></i></div>
+        <div onclick="UI.open('post-modal')" class="feather-btn"><i class="fa-solid fa-feather-pointed text-3xl"></i></div>
     </div>
 
-    <div id="chat-modal" class="chat-full">
-        <div class="chat-header">
-            <button onclick="UI.close('chat-modal')" class="text-emerald-500 text-xl"><i class="fa-solid fa-chevron-left"></i></button>
-            <div class="flex flex-col">
-                <span id="chat-name" class="font-black text-sm uppercase text-emerald-500 tracking-widest">Sohbet</span>
-                <span class="text-[9px] text-zinc-500 uppercase font-black">Aktif Mesajlaşma</span>
-            </div>
+    <div id="post-modal" class="chat-view p-8">
+        <div class="flex justify-between items-center mb-10">
+            <button onclick="UI.close('post-modal')" class="text-zinc-500 font-bold uppercase text-xs">Kapat</button>
+            <button id="btn-pub" class="bg-emerald-500 text-black px-10 py-3 rounded-full font-black text-xs uppercase">Paylaş</button>
         </div>
-        <div id="chat-messages" class="message-area"></div>
-        <div class="chat-input-container">
-            <input type="text" id="chat-input" class="chat-input" placeholder="Hayra dair bir şeyler yaz...">
-            <button id="chat-send" class="send-btn"><i class="fa-solid fa-paper-plane"></i></button>
+        <textarea id="post-in" class="w-full bg-transparent text-white text-3xl font-bold h-64 outline-none border-none resize-none" placeholder="Ne hayır işledin?"></textarea>
+        
+        <p class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-4">Kart Rengi Seç</p>
+        <div class="flex gap-3 mb-10" id="color-picker">
+            <div class="color-dot active" style="background: #10b981;" data-color="#10b981"></div>
+            <div class="color-dot" style="background: #3b82f6;" data-color="#3b82f6"></div>
+            <div class="color-dot" style="background: #8b5cf6;" data-color="#8b5cf6"></div>
+            <div class="color-dot" style="background: #f59e0b;" data-color="#f59e0b"></div>
+            <div class="color-dot" style="background: #ef4444;" data-color="#ef4444"></div>
         </div>
     </div>
 
-    <div id="post-modal" class="chat-full p-8">
-        <div class="flex justify-between items-center mb-14">
-            <button onclick="UI.close('post-modal')" class="text-zinc-500 font-bold uppercase text-xs">Vazgeç</button>
-            <button id="post-publish" class="bg-emerald-500 text-black px-12 py-4 rounded-full font-black text-xs uppercase tracking-tighter">Paylaşımı Gönder</button>
+    <div id="dm-view" class="chat-view">
+        <div class="h-20 px-6 border-b border-zinc-900 flex items-center gap-4">
+            <button onclick="UI.close('dm-view')" class="text-emerald-500 text-xl"><i class="fa-solid fa-chevron-left"></i></button>
+            <span id="dm-title" class="font-black text-sm uppercase text-emerald-500">DM</span>
         </div>
-        <textarea id="post-input" class="w-full bg-transparent text-white text-3xl font-bold h-96 outline-none border-none resize-none" placeholder="Bugün hayra nasıl vesile oldun?"></textarea>
-    </div>
-
-    <div id="op-profile" class="chat-full">
-        <div class="p-6">
-            <button onclick="UI.close('op-profile')" class="text-emerald-500 text-2xl"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="scroll-container p-8 flex flex-col items-center">
-            <img id="op-img" class="w-36 h-36 rounded-[50px] border-2 border-emerald-500 p-1.5 mb-6">
-            <h2 id="op-name" class="text-3xl font-black uppercase tracking-tighter">...</h2>
-            <p id="op-bio" class="text-sm text-zinc-500 mt-4 italic text-center px-6">...</p>
-            <button id="op-chat-btn" class="mt-8 bg-white text-black px-12 py-4 rounded-full font-black text-xs uppercase tracking-widest active:scale-90 transition">Mesaj Gönder</button>
-            <div class="h-px bg-zinc-900 w-full my-12"></div>
-            <div id="op-posts" class="w-full"></div>
+        <div id="dm-box" class="scroll-v p-6 flex flex-col"></div>
+        <div class="p-6 bg-black border-t border-zinc-900 flex gap-3">
+            <input type="text" id="dm-in" class="flex-1 bg-zinc-900 p-4 rounded-2xl outline-none font-bold text-sm" placeholder="Mesajını yaz...">
+            <button id="dm-send" class="bg-emerald-500 text-black w-14 h-14 rounded-2xl flex items-center justify-center transition active:scale-90"><i class="fa-solid fa-paper-plane"></i></button>
         </div>
     </div>
 
@@ -158,20 +132,9 @@
         import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, updateDoc, getDoc, setDoc, deleteDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDZO3lct-xzXAx79lbqgMP7s6WRCirWIHk",
-            authDomain: "hayravesile.firebaseapp.com",
-            projectId: "hayravesile",
-            storageBucket: "hayravesile.appspot.com",
-            messagingSenderId: "980073667334",
-            appId: "1:980073667334:web:1f6260f0abf3bcc820dc87"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app), db = getFirestore(app);
-        let me = null, activeRoom = null, currentChatUnsub = null;
-
-        const quotes = ["İyilik yap, denize at.", "Bir gönüle girmek en büyük hayırdır.", "Paylaştığın senindir, biriktirdiğin değil."];
+        const cfg = { apiKey: "AIzaSyDZO3lct-xzXAx79lbqgMP7s6WRCirWIHk", authDomain: "hayravesile.firebaseapp.com", projectId: "hayravesile", storageBucket: "hayravesile.appspot.com", messagingSenderId: "980073667334", appId: "1:980073667334:web:1f6260f0abf3bcc820dc87" };
+        const app = initializeApp(cfg), auth = getAuth(app), db = getFirestore(app);
+        let me = null, activeDm = null, selColor = "#10b981", dmUnsub = null;
 
         window.Auth = {
             login: () => signInWithPopup(auth, new GoogleAuthProvider()),
@@ -182,11 +145,20 @@
             if(u) {
                 me = u;
                 document.getElementById('auth-gate').style.display = 'none';
-                document.getElementById('app-view').style.display = 'flex';
+                document.getElementById('app').style.display = 'flex';
                 document.getElementById('u-avatar').innerHTML = `<img src="${u.photoURL}" class="w-full h-full object-cover">`;
-                await setDoc(doc(db, "users", u.uid), { name: u.displayName, pfp: u.photoURL, bio: "Hayra vesile bir can." }, { merge: true });
-                Data.init();
+                await setDoc(doc(db, "users", u.uid), { name: u.displayName, pfp: u.photoURL, bio: "Hayra vesile oldu." }, { merge: true });
+                Data.syncFeed(); Data.syncUsers();
             }
+        });
+
+        // RENK SEÇİMİ
+        document.querySelectorAll('.color-dot').forEach(dot => {
+            dot.onclick = () => {
+                document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+                dot.classList.add('active');
+                selColor = dot.dataset.color;
+            };
         });
 
         window.UI = {
@@ -195,158 +167,104 @@
                 s.classList.toggle('active');
                 o.style.display = s.classList.contains('active') ? 'block' : 'none';
             },
-            tab: (t, el) => {
-                document.querySelectorAll('.scroll-container > div').forEach(d => d.classList.add('hidden'));
-                document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            tab: (t) => {
+                document.querySelectorAll('main > div').forEach(d => d.classList.add('hidden'));
                 document.getElementById('tab-'+t).classList.remove('hidden');
-                if(el) el.classList.add('active');
                 UI.side();
                 if(t === 'profile') Data.syncProfile();
             },
             open: (id) => document.getElementById(id).style.display = 'flex',
             close: (id) => {
                 document.getElementById(id).style.display = 'none';
-                if(id === 'chat-modal' && currentChatUnsub) currentChatUnsub();
-            },
-            about: () => {
-                const q = quotes[Math.floor(Math.random()*quotes.length)];
-                document.getElementById('quote-display').innerText = q;
-                Swal.fire({ title: 'V571 ULTIMATE', text: q, background: '#0a0a0b', color: '#fff', confirmButtonColor: '#10b981' });
+                if(id === 'dm-view' && dmUnsub) dmUnsub();
             }
         };
 
         window.Data = {
-            init: () => { Data.syncFeed(); Data.syncUsers(); },
             syncFeed: () => {
                 onSnapshot(query(collection(db, "posts"), orderBy("time", "desc")), snap => {
-                    const l = document.getElementById('post-feed'); l.innerHTML = '';
+                    const l = document.getElementById('feed-container'); l.innerHTML = '';
                     snap.forEach(d => l.innerHTML += Data.postMarkup(d.id, d.data()));
                 });
             },
             postMarkup: (id, p) => {
-                const hasLikes = p.likes && Array.isArray(p.likes);
-                const hasDislikes = p.dislikes && Array.isArray(p.dislikes);
-                const liked = hasLikes && p.likes.includes(me.uid);
-                const disliked = hasDislikes && p.dislikes.includes(me.uid);
-
+                const liked = p.likes?.includes(me.uid);
                 return `
-                    <div class="hv-card" id="post-${id}">
-                        <div class="flex items-center gap-4 mb-6">
-                            <img src="${p.pfp}" class="w-12 h-12 rounded-2xl cursor-pointer shadow-lg" onclick="Data.viewProfile('${p.uid}')">
-                            <div class="flex-1" onclick="Data.viewProfile('${p.uid}')">
-                                <span class="text-sm font-extrabold text-emerald-500 uppercase italic tracking-tighter">${p.name}</span>
-                                <span class="vesile-tag">İyilik Elçisi</span>
+                    <div class="hv-card" style="background: ${p.color || '#1e1e21'}">
+                        <div class="flex items-center gap-4 mb-5">
+                            <img src="${p.pfp}" class="w-12 h-12 rounded-2xl shadow-xl">
+                            <div class="flex-1">
+                                <span class="text-sm font-black text-white uppercase">${p.name}</span>
+                                <span class="vesile-tag">İyiliğe Vesile Oldu</span>
                             </div>
-                            ${p.uid === me.uid ? `<i onclick="Data.delPost('${id}')" class="fa-solid fa-trash-can text-red-500/20 text-sm"></i>` : ''}
                         </div>
-                        <p class="text-[17px] font-semibold text-zinc-100 leading-relaxed mb-8">${p.text}</p>
-                        <div class="flex items-center gap-8">
-                            <div class="heart-btn flex items-center gap-2 ${liked ? 'text-red-500' : 'text-zinc-600'}" 
-                                 onclick="Data.react('${id}', 'likes', ${liked}, this)">
-                                <i class="fa-${liked ? 'solid' : 'regular'} fa-heart text-2xl"></i>
-                                <span class="text-xs font-black">${hasLikes ? p.likes.length : 0}</span>
-                            </div>
-                            <div class="dis-btn flex items-center gap-2 ${disliked ? 'text-zinc-200' : 'text-zinc-700'}" 
-                                 onclick="Data.react('${id}', 'dislikes', ${disliked}, this)">
-                                <i class="fa-${disliked ? 'solid' : 'regular'} fa-thumbs-down text-2xl"></i>
-                                <span class="text-xs font-black">${hasDislikes ? p.dislikes.length : 0}</span>
+                        <p class="text-[17px] font-bold text-white leading-relaxed mb-6">${p.text}</p>
+                        <div class="flex gap-4">
+                            <div class="flex items-center gap-2 cursor-pointer" onclick="Data.react('${id}', ${liked}, this)">
+                                <i class="fa-${liked ? 'solid' : 'regular'} fa-heart text-2xl ${liked ? 'text-white' : 'text-white/40'}"></i>
+                                <span class="text-xs font-black text-white">${p.likes?.length || 0}</span>
                             </div>
                         </div>
                     </div>`;
             },
-            react: async (id, type, status, el) => {
-                if(!status) {
-                    el.classList.add('animating');
-                    setTimeout(() => el.classList.remove('animating'), 600);
-                }
-                const ref = doc(db, "posts", id);
-                try {
-                    await updateDoc(ref, { [type]: status ? arrayRemove(me.uid) : arrayUnion(me.uid) });
-                } catch (e) {
-                    // Eğer alan yoksa (ilk kez basılıyorsa) alanı oluştur
-                    await updateDoc(ref, { [type]: [me.uid] });
-                }
+            react: async (id, status, el) => {
+                el.querySelector('i').classList.add('pop');
+                setTimeout(() => el.querySelector('i').classList.remove('pop'), 400);
+                await updateDoc(doc(db, "posts", id), { likes: status ? arrayRemove(me.uid) : arrayUnion(me.uid) });
             },
-            delPost: async (id) => { if(confirm("Bu izi silmek istediğine emin misin?")) await deleteDoc(doc(db, "posts", id)); },
             syncUsers: () => {
                 onSnapshot(collection(db, "users"), snap => {
                     const l = document.getElementById('user-list'); l.innerHTML = '';
                     snap.forEach(d => {
                         if(d.id === me.uid) return;
-                        l.innerHTML += `
-                            <div class="bg-zinc-900/40 p-5 rounded-[30px] flex items-center gap-5 border border-white/5 active:scale-95 transition" onclick="Data.openChat('${d.id}', '${d.data().name}')">
-                                <img src="${d.data().pfp}" class="w-14 h-14 rounded-[20px] shadow-2xl">
-                                <div class="flex-1">
-                                    <h4 class="font-black text-sm uppercase tracking-tight text-white">${d.data().name}</h4>
-                                    <p class="text-[10px] text-emerald-500 font-bold uppercase mt-1">Sohbeti Başlat</p>
-                                </div>
-                                <i class="fa-solid fa-chevron-right text-zinc-800"></i>
-                            </div>`;
+                        l.innerHTML += `<div class="bg-zinc-900 p-5 rounded-[28px] flex items-center gap-4 border border-white/5" onclick="Data.openDm('${d.id}', '${d.data().name}')">
+                            <img src="${d.data().pfp}" class="w-12 h-12 rounded-2xl"><span class="font-black text-sm uppercase">${d.data().name}</span>
+                        </div>`;
                     });
                 });
             },
-            openChat: (tid, name) => {
-                activeRoom = [me.uid, tid].sort().join("_");
-                document.getElementById('chat-name').innerText = name;
-                UI.open('chat-modal');
-                
-                const q = query(collection(db, "V571_Final_Gate", activeRoom, "messages"), orderBy("time", "asc"));
-                currentChatUnsub = onSnapshot(q, snap => {
-                    const box = document.getElementById('chat-messages'); box.innerHTML = '';
-                    snap.forEach(d => {
-                        const m = d.data();
-                        box.innerHTML += `<div class="msg-bubble ${m.sender === me.uid ? 'msg-me' : 'msg-them'}">${m.text}</div>`;
-                    });
-                    box.scrollTop = box.scrollHeight;
-                });
-            },
-            viewProfile: async (uid) => {
-                const s = await getDoc(doc(db, "users", uid));
-                if(!s.exists()) return;
-                const d = s.data();
-                document.getElementById('op-img').src = d.pfp;
-                document.getElementById('op-name').innerText = d.name;
-                document.getElementById('op-bio').innerText = d.bio || "Hayra vesile bir ruh.";
-                document.getElementById('op-chat-btn').onclick = () => { UI.close('op-profile'); Data.openChat(uid, d.name); };
-                UI.open('op-profile');
-                
-                onSnapshot(query(collection(db, "posts"), orderBy("time", "desc")), snap => {
-                    const l = document.getElementById('op-posts'); l.innerHTML = '';
-                    snap.forEach(p => { if(p.data().uid === uid) l.innerHTML += Data.postMarkup(p.id, p.data()); });
+            openDm: (tid, name) => {
+                activeDm = [me.uid, tid].sort().join("_");
+                document.getElementById('dm-title').innerText = name;
+                UI.open('dm-view');
+                dmUnsub = onSnapshot(query(collection(db, "v571_dm", activeDm, "m"), orderBy("t", "asc")), snap => {
+                    const b = document.getElementById('dm-box'); b.innerHTML = '';
+                    snap.forEach(d => b.innerHTML += `<div class="msg-bubble ${d.data().s === me.uid ? 'msg-me' : 'msg-them'}">${d.data().v}</div>`);
+                    b.scrollTop = b.scrollHeight;
                 });
             },
             syncProfile: async () => {
                 const s = await getDoc(doc(db, "users", me.uid));
                 const d = s.data();
-                document.getElementById('my-pfp-big').src = d.pfp;
-                document.getElementById('my-name-big').innerText = d.name;
-                document.getElementById('my-bio-big').innerText = d.bio;
+                document.getElementById('p-img').src = d.pfp;
+                document.getElementById('p-name').innerText = d.name;
+                document.getElementById('p-bio').innerText = d.bio;
                 onSnapshot(query(collection(db, "posts"), orderBy("time", "desc")), snap => {
-                    const l = document.getElementById('my-posts-feed'); l.innerHTML = '';
+                    const l = document.getElementById('my-posts'); l.innerHTML = '';
                     snap.forEach(p => { if(p.data().uid === me.uid) l.innerHTML += Data.postMarkup(p.id, p.data()); });
                 });
             }
         };
 
-        // EVENT LISTENERS
-        document.getElementById('post-publish').onclick = async () => {
-            const v = document.getElementById('post-input').value.trim();
+        // GÖNDER VE PAYLAŞ
+        document.getElementById('btn-pub').onclick = async () => {
+            const v = document.getElementById('post-in').value.trim();
             if(v) {
-                await addDoc(collection(db, "posts"), { text: v, uid: me.uid, name: me.displayName, pfp: me.photoURL, time: Date.now(), likes: [], dislikes: [] });
-                document.getElementById('post-input').value = ''; UI.close('post-modal');
+                await addDoc(collection(db, "posts"), { text: v, uid: me.uid, name: me.displayName, pfp: me.photoURL, time: Date.now(), likes: [], color: selColor });
+                document.getElementById('post-in').value = ''; UI.close('post-modal');
             }
         };
 
-        document.getElementById('chat-send').onclick = async () => {
-            const i = document.getElementById('chat-input');
-            if(i.value.trim() && activeRoom) {
-                await addDoc(collection(db, "V571_Final_Gate", activeRoom, "messages"), { 
-                    text: i.value.trim(), sender: me.uid, time: Date.now() 
-                });
+        // DM GÖNDER
+        document.getElementById('dm-send').onclick = async () => {
+            const i = document.getElementById('dm-in');
+            const val = i.value.trim();
+            if(val && activeDm) {
+                await addDoc(collection(db, "v571_dm", activeDm, "m"), { v: val, s: me.uid, t: Date.now() });
                 i.value = '';
             }
         };
-        document.getElementById('chat-input').onkeydown = (e) => { if(e.key === 'Enter') document.getElementById('chat-send').click(); };
+        document.getElementById('dm-in').onkeydown = (e) => { if(e.key === 'Enter') document.getElementById('dm-send').click(); };
 
     </script>
 </body>
