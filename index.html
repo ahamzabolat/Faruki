@@ -488,3 +488,207 @@
     </script>
 </body>
 </html>
+<!doctype html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <title>Hayravesile | Instagram Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        :root {
+            --bg: #ffffff;
+            --text: #1a1a1a;
+            --border: #efefef;
+            --card: #ffffff;
+            --primary: #059669;
+        }
+
+        body.dark {
+            --bg: #000000;
+            --text: #ffffff;
+            --border: #262626;
+            --card: #000000;
+        }
+
+        * { font-family: 'Inter', sans-serif; transition: 0.2s ease-in-out; }
+        body { background: var(--bg); color: var(--text); margin: 0; }
+
+        /* Yazıların net görünmesi için zorunlu sınıflar */
+        .text-main { color: var(--text) !important; }
+        .bg-main { background: var(--bg) !important; }
+        .border-main { border-color: var(--border) !important; }
+
+        /* Akış ve Kartlar */
+        .feed-container { max-width: 470px; margin: 0 auto; padding-top: 15px; }
+        .post-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+        
+        /* Medya Alanı */
+        .media-container { width: 100%; background: #000; display: flex; align-items: center; justify-content: center; min-height: 300px; max-height: 580px; }
+        .media-container img, .media-container video { width: 100%; height: auto; max-height: 580px; object-fit: contain; }
+
+        /* Navigasyon */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; left: 50%; transform: translateX(-50%); 
+                      background: var(--card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; 
+                      padding: 12px 0; z-index: 1000; }
+        
+        /* Story Halkaları */
+        .story-box { display: flex; gap: 12px; overflow-x: auto; padding: 15px; border-bottom: 1px solid var(--border); scrollbar-width: none; }
+        .ring-gradient { padding: 2px; background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); border-radius: 50%; width: 66px; height: 66px; cursor: pointer; }
+        .ring-inner { background: var(--card); border-radius: 50%; padding: 2px; width: 100%; height: 100%; }
+        .ring-inner img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+
+        .hidden { display: none; }
+        .modal-overlay { background: rgba(0,0,0,0.8); backdrop-blur: 5px; }
+    </style>
+</head>
+<body class="pb-20">
+
+    <header class="sticky top-0 z-[100] bg-main border-b border-main p-4 flex justify-between items-center max-w-[500px] mx-auto">
+        <h1 class="text-2xl font-black italic tracking-tighter" style="color: var(--primary)">Hayravesile</h1>
+        <div class="flex gap-5 text-xl text-main">
+            <i class="fa-regular fa-square-plus cursor-pointer" onclick="toggleModal('post-modal', true)"></i>
+            <i class="fa-solid fa-moon cursor-pointer" onclick="document.body.classList.toggle('dark')"></i>
+        </div>
+    </header>
+
+    <main class="feed-container px-2">
+        <div class="story-box" id="stories">
+            <div class="flex flex-col items-center gap-1">
+                <div class="ring-gradient"><div class="ring-inner"><img src="https://via.placeholder.com/100" id="my-avatar"></div></div>
+                <span class="text-[10px] font-medium text-main">Senin Hikayen</span>
+            </div>
+        </div>
+
+        <div id="main-feed">
+            <div class="py-20 text-center text-gray-400">Yükleniyor...</div>
+        </div>
+    </main>
+
+    <div id="post-modal" class="hidden fixed inset-0 z-[2000] modal-overlay flex items-center justify-center p-4">
+        <div class="bg-main border-main w-full max-w-md rounded-xl overflow-hidden shadow-2xl">
+            <div class="p-4 border-b border-main flex justify-between font-bold">
+                <button onclick="toggleModal('post-modal', false)" class="text-gray-400">İptal</button>
+                <span class="text-main">Yeni Gönderi</span>
+                <button onclick="sendToFirebase()" class="text-blue-500" id="publish-btn">Paylaş</button>
+            </div>
+            <div class="p-4">
+                <input type="text" id="input-url" placeholder="Görsel veya MP4 Video Linki..." class="w-full p-3 bg-gray-100 dark:bg-zinc-800 rounded-lg mb-4 outline-none text-sm text-main">
+                <textarea id="input-desc" placeholder="Açıklama ekle..." class="w-full h-32 bg-transparent outline-none resize-none text-sm text-main border-b border-main"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <i class="fa-solid fa-house text-2xl text-main" onclick="location.reload()"></i>
+        <i class="fa-solid fa-magnifying-glass text-2xl text-main"></i>
+        <i class="fa-solid fa-clapperboard text-2xl text-main"></i>
+        <i class="fa-regular fa-heart text-2xl text-main"></i>
+        <div id="nav-user-img" class="w-7 h-7 rounded-full border border-gray-400 overflow-hidden bg-gray-300"></div>
+    </nav>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZO3lct-xzXAx79lbqgMP7s6WRCirWIHk",
+            authDomain: "hayravesile.firebaseapp.com",
+            projectId: "hayravesile",
+            storageBucket: "hayravesile.firebasestorage.app",
+            messagingSenderId: "980073667334",
+            appId: "1:980073667334:web:1f6260f0abf3bcc820dc87"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- AUTH & USER ---
+        onAuthStateChanged(auth, user => {
+            if(user) {
+                document.getElementById('my-avatar').src = user.photoURL;
+                document.getElementById('nav-user-img').innerHTML = `<img src="${user.photoURL}" class="w-full h-full object-cover">`;
+                initFeed();
+            } else {
+                signInWithPopup(auth, new GoogleAuthProvider());
+            }
+        });
+
+        // --- UI FUNCS ---
+        window.toggleModal = (id, show) => {
+            document.getElementById(id).classList.toggle('hidden', !show);
+        };
+
+        // --- FIREBASE OPS ---
+        window.sendToFirebase = async () => {
+            const url = document.getElementById('input-url').value;
+            const desc = document.getElementById('input-desc').value;
+            if(!desc) return alert("Açıklama boş olamaz!");
+
+            document.getElementById('publish-btn').innerText = "...";
+            await addDoc(collection(db, "posts"), {
+                media: url, desc: desc, author: auth.currentUser.displayName,
+                uid: auth.currentUser.uid, avatar: auth.currentUser.photoURL,
+                likes: [], date: serverTimestamp()
+            });
+            
+            toggleModal('post-modal', false);
+            document.getElementById('input-url').value = "";
+            document.getElementById('input-desc').value = "";
+            document.getElementById('publish-btn').innerText = "Paylaş";
+        };
+
+        function initFeed() {
+            onSnapshot(query(collection(db, "posts"), orderBy("date", "desc")), snap => {
+                const feed = document.getElementById('main-feed');
+                feed.innerHTML = '';
+                snap.forEach(ds => {
+                    const p = ds.data();
+                    const isVideo = p.media?.includes('.mp4');
+                    const isLiked = p.likes?.includes(auth.currentUser.uid);
+
+                    feed.innerHTML += `
+                        <div class="post-card border-main bg-main shadow-sm">
+                            <div class="p-3 flex items-center gap-3">
+                                <img src="${p.avatar}" class="w-8 h-8 rounded-full border border-emerald-500">
+                                <span class="font-bold text-sm text-main">${p.author}</span>
+                            </div>
+                            
+                            <div class="media-container" ondblclick="handleLike('${ds.id}', ${JSON.stringify(p.likes)})">
+                                ${isVideo ? `<video src="${p.media}" controls loop muted autoplay></video>` : `<img src="${p.media || 'https://via.placeholder.com/600x600?text=Hayravesile'}">`}
+                            </div>
+
+                            <div class="p-4">
+                                <div class="flex gap-4 text-2xl mb-3 text-main">
+                                    <i class="${isLiked ? 'fa-solid fa-heart text-red-500' : 'fa-regular fa-heart'} cursor-pointer" onclick="handleLike('${ds.id}', ${JSON.stringify(p.likes)})"></i>
+                                    <i class="fa-regular fa-comment"></i>
+                                    <i class="fa-regular fa-paper-plane" onclick="sharePost('${p.desc}')"></i>
+                                </div>
+                                <p class="font-bold text-sm mb-1 text-main">${p.likes?.length || 0} beğenme</p>
+                                <p class="text-sm text-main leading-relaxed">
+                                    <span class="font-bold mr-2">${p.author}</span>${p.desc}
+                                </p>
+                            </div>
+                        </div>`;
+                });
+            });
+        }
+
+        window.handleLike = async (id, likes) => {
+            const ref = doc(db, "posts", id);
+            const uid = auth.currentUser.uid;
+            likes?.includes(uid) ? await updateDoc(ref, { likes: arrayRemove(uid) }) : await updateDoc(ref, { likes: arrayUnion(uid) });
+        };
+
+        window.sharePost = (desc) => {
+            const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent("Hayravesile Paylaşımı: " + desc)}`;
+            window.open(whatsappUrl, '_blank');
+        };
+    </script>
+</body>
+</html>
