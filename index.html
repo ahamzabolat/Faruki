@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hayra Vesile | Social</title>
+    <title>Hayra Vesile | Voice</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -24,32 +24,24 @@
         .badge-user { color: #666; font-size: 10px; font-weight: 900; border: 1px solid #333; padding: 1px 6px; border-radius: 4px; margin-top: 5px; display: inline-block; }
         
         input, textarea { background: #111 !important; border: 1px solid #222 !important; color: white !important; outline: none; }
-        .small-text { font-size: 13px; line-height: 1.4; color: #efefef; }
+        .audio-player { filter: invert(100%) hue-rotate(180deg) brightness(1.5); height: 30px; width: 180px; }
         
-        /* Paylaş Butonu Stili */
-        .share-btn { transition: 0.2s; cursor: pointer; }
-        .share-btn:active { transform: scale(0.9); color: #10b981; }
+        .recording { color: #ef4444; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
 
     <header class="sticky top-0 z-[8000] bg-black border-b border-white/5 p-4 flex justify-between items-center">
-        <h1 class="text-lg font-black text-emerald-500" onclick="showTab('feed')">HAYRA VESİLE</h1>
+        <h1 class="text-lg font-black text-emerald-500" onclick="location.reload()">HAYRA VESİLE</h1>
         <div id="u-top" class="w-8 h-8 rounded-full overflow-hidden border border-emerald-500/20" onclick="showTab('profile')"></div>
     </header>
 
     <main class="pb-24">
-        <div id="tab-feed" class="tab-page">
-            <div id="feed-items"></div>
-        </div>
-
-        <div id="tab-users" class="tab-page hidden p-4">
-            <input type="text" id="search-input" class="w-full rounded-xl p-3 mb-4 text-sm" placeholder="Kişi ara ve Enter'a bas...">
-            <div id="user-list" class="space-y-2"></div>
-        </div>
-
+        <div id="tab-feed" class="tab-page"><div id="feed-items"></div></div>
+        <div id="tab-users" class="tab-page hidden p-4"><div id="user-list" class="space-y-3"></div></div>
         <div id="tab-profile" class="tab-page hidden">
-            <div class="p-6 border-b border-white/5">
+            <div id="profile-content" class="p-6 border-b border-white/5">
                 <div class="flex items-start gap-5">
                     <div class="text-center">
                         <img id="p-img" class="w-20 h-20 rounded-2xl border-2 border-emerald-500 p-1 mb-1 object-cover">
@@ -58,44 +50,39 @@
                     <div class="flex-1">
                         <h2 id="p-name" class="font-black text-xl">...</h2>
                         <p id="p-bio-show" class="text-xs text-zinc-500 mt-1">...</p>
-                        <a id="p-link-show" href="#" target="_blank" class="text-[10px] text-emerald-500 font-bold block mt-1"></a>
                     </div>
                 </div>
                 <div class="mt-6 space-y-2">
-                    <input type="text" id="b-in" class="w-full p-2 rounded-lg text-xs" placeholder="Biyografi...">
-                    <input type="text" id="l-in" class="w-full p-2 rounded-lg text-xs" placeholder="Link...">
-                    <button onclick="updateProfile()" class="w-full bg-emerald-500 text-black font-black py-2 rounded-lg text-xs">KAYDET</button>
+                    <input type="text" id="b-in" class="w-full p-2 rounded-lg text-xs" placeholder="Biyografin">
+                    <button onclick="updateProfile()" class="w-full bg-emerald-500 text-black font-black py-2 rounded-lg text-xs uppercase">Kaydet</button>
                 </div>
             </div>
-            <div id="p-grid" class="grid grid-cols-3 gap-1 p-1"></div>
         </div>
     </main>
+
+    <div id="page-chat" class="full-page">
+        <div class="flex items-center gap-4 mb-4 border-b border-white/5 pb-4">
+            <i class="fa-solid fa-arrow-left text-xl" onclick="closeFullPage('page-chat')"></i>
+            <span id="chat-name" class="font-black text-sm">...</span>
+        </div>
+        <div id="chat-messages" class="flex-1 overflow-y-auto space-y-4 p-2"></div>
+        <div class="flex items-center gap-2 mt-4 p-2 bg-zinc-900 rounded-2xl">
+            <input type="text" id="chat-input" class="flex-1 bg-transparent p-2 text-sm" placeholder="Mesaj...">
+            <button id="btn-voice" class="text-zinc-400 p-2 text-xl"><i class="fa-solid fa-microphone"></i></button>
+            <button id="btn-send-msg" class="bg-emerald-500 text-black w-10 h-10 rounded-xl"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
 
     <div id="page-post" class="full-page">
         <div class="flex justify-between items-center mb-8">
             <button onclick="closeFullPage('page-post')" class="text-zinc-500 font-bold">İptal</button>
             <button id="btn-publish" class="bg-emerald-500 text-black px-6 py-2 rounded-full font-black text-xs">YAYINLA</button>
         </div>
-        <textarea id="post-input" class="w-full p-4 rounded-2xl text-lg font-bold outline-none h-48" placeholder="Hayırlı bir mesaj yaz..."></textarea>
-        <input type="text" id="post-link" class="w-full p-3 mt-4 rounded-xl outline-none text-xs" placeholder="Görsel/Video Linki">
-    </div>
-
-    <div id="page-chat" class="full-page">
-        <div class="flex items-center gap-4 mb-4 border-b border-white/5 pb-4">
-            <i class="fa-solid fa-arrow-left" onclick="closeFullPage('page-chat')"></i>
-            <img id="chat-pfp" class="w-8 h-8 rounded-full object-cover">
-            <span id="chat-name" class="font-black text-sm">...</span>
-        </div>
-        <div id="chat-messages" class="flex-1 overflow-y-auto space-y-3 p-2"></div>
-        <div class="flex gap-2 mt-4">
-            <input type="text" id="chat-input" class="flex-1 p-3 rounded-xl outline-none text-sm" placeholder="Mesaj...">
-            <button id="btn-send-msg" class="bg-emerald-500 text-black px-5 rounded-xl"><i class="fa-solid fa-paper-plane"></i></button>
-        </div>
+        <textarea id="post-input" class="w-full p-4 rounded-2xl text-lg font-bold outline-none h-48" placeholder="Mesajını yaz..."></textarea>
     </div>
 
     <nav class="nav-dock">
         <i class="fa-solid fa-house text-xl" onclick="showTab('feed')"></i>
-        <i class="fa-solid fa-magnifying-glass text-xl" onclick="showTab('users')"></i>
         <div class="w-10 h-10 bg-emerald-500 text-black rounded-xl flex items-center justify-center" onclick="openFullPage('page-post')">
             <i class="fa-solid fa-plus text-xl"></i>
         </div>
@@ -119,7 +106,7 @@
 
         const app = initializeApp(config);
         const auth = getAuth(app), db = getFirestore(app);
-        let me = null, activeChatId = null;
+        let me = null, activeChatId = null, mediaRecorder = null, audioChunks = [];
 
         onAuthStateChanged(auth, async u => {
             if(u) {
@@ -130,6 +117,36 @@
             } else { signInWithPopup(auth, new GoogleAuthProvider()); }
         });
 
+        // SES KAYIT SİSTEMİ (Base64 - No Storage Needed)
+        const voiceBtn = document.getElementById('btn-voice');
+        voiceBtn.onclick = async () => {
+            if (mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.stop();
+                voiceBtn.classList.remove('recording');
+                return;
+            }
+
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+
+            mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                const reader = new FileReader();
+                reader.readAsDataURL(audioBlob);
+                reader.onloadend = async () => {
+                    const base64Audio = reader.result;
+                    await addDoc(collection(db, "chats", activeChatId, "messages"), {
+                        voice: base64Audio, s: me.uid, date: serverTimestamp()
+                    });
+                };
+            };
+
+            mediaRecorder.start();
+            voiceBtn.classList.add('recording');
+        };
+
         window.showTab = (t) => {
             document.querySelectorAll('.tab-page').forEach(p => p.classList.add('hidden'));
             document.getElementById('tab-'+t).classList.remove('hidden');
@@ -137,37 +154,14 @@
         window.openFullPage = (id) => document.getElementById(id).style.display = 'flex';
         window.closeFullPage = (id) => document.getElementById(id).style.display = 'none';
 
-        // PAYLAŞ (WHATSAPP & KOPYALA)
-        window.sharePost = (text, id) => {
-            const shareUrl = `https://hayravesile.app/post/${id}`; // Temsili link
-            const message = `Hayra Vesile'de yeni bir paylaşım:\n\n"${text}"\n\nBuradan bakabilirsin: ${shareUrl}`;
-            
-            Swal.fire({
-                title: 'Paylaş',
-                html: `<div class="flex flex-col gap-3">
-                    <button onclick="window.open('https://api.whatsapp.com/send?text=${encodeURIComponent(message)}', '_blank')" class="bg-[#25D366] text-white p-3 rounded-xl font-bold"><i class="fa-brands fa-whatsapp"></i> WhatsApp'ta Gönder</button>
-                    <button onclick="navigator.clipboard.writeText('${message}'); Swal.fire('Başarılı', 'Link kopyalandı!', 'success')" class="bg-zinc-800 text-white p-3 rounded-xl font-bold"><i class="fa-solid fa-copy"></i> Linki Kopyala</button>
-                </div>`,
-                showConfirmButton: false,
-                background: '#0a0a0b',
-                color: '#fff'
-            });
-        };
-
         // YAYINLA
         document.getElementById('btn-publish').onclick = async () => {
-            const txt = document.getElementById('post-input').value;
-            const lnk = document.getElementById('post-link').value;
-            if(!txt.trim()) return;
-            const btn = document.getElementById('btn-publish');
-            btn.disabled = true; btn.innerText = "...";
-            
+            const txt = document.getElementById('post-input').value.trim();
+            if(!txt) return;
             await addDoc(collection(db, "hv_posts"), {
-                text: txt, link: lnk || null, uid: me.uid, name: me.displayName, pfp: me.photoURL,
+                text: txt, uid: me.uid, name: me.displayName, pfp: me.photoURL,
                 likes: [], date: serverTimestamp()
             });
-            
-            btn.disabled = false; btn.innerText = "YAYINLA";
             document.getElementById('post-input').value = "";
             closeFullPage('page-post');
             showTab('feed');
@@ -175,65 +169,37 @@
 
         function loadFeed() {
             onSnapshot(query(collection(db, "hv_posts"), orderBy("date", "desc")), snap => {
-                const feed = document.getElementById('feed-items'), grid = document.getElementById('p-grid');
-                feed.innerHTML = ''; grid.innerHTML = '';
-
+                const feed = document.getElementById('feed-items'); feed.innerHTML = '';
                 snap.forEach(d => {
                     const p = d.data(), pid = d.id;
-                    const liked = p.likes?.includes(me.uid);
-                    const isAdmin = p.name === "Adil Hamza";
-                    
+                    const isAdmin = p.name.includes("Adil Hamza");
                     feed.innerHTML += `
                         <div class="hv-card">
-                            <div class="flex items-start gap-3 mb-3">
-                                <img src="${p.pfp}" class="w-9 h-9 rounded-full object-cover" onclick="startChat('${p.uid}', '${p.name}', '${p.pfp}')">
+                            <div class="flex items-start gap-3">
+                                <img src="${p.pfp}" class="w-9 h-9 rounded-full">
                                 <div class="flex-1">
                                     <div class="flex justify-between items-center">
-                                        <span class="text-[10px] font-black uppercase text-emerald-500">${p.name}</span>
-                                        ${p.uid === me.uid || me.displayName === "Adil Hamza" ? `<i class="fa-solid fa-trash text-[10px] opacity-20" onclick="deletePost('${pid}')"></i>` : ''}
+                                        <span class="text-[10px] font-black text-emerald-500">${p.name}</span>
+                                        ${isAdmin || p.uid === me.uid ? `<i class="fa-solid fa-trash opacity-20 text-xs" onclick="deleteDoc(doc(db, 'hv_posts', '${pid}'))"></i>` : ''}
                                     </div>
                                     <span class="${isAdmin ? 'badge-admin' : 'badge-user'}">${isAdmin ? 'ADMIN' : 'ÜYE'}</span>
                                     <p class="small-text font-bold mt-2">${p.text}</p>
                                 </div>
                             </div>
-                            ${p.link ? (p.link.includes('mp4') ? `<video src="${p.link}" controls class="w-full rounded-xl"></video>` : `<img src="${p.link}" class="w-full rounded-xl">`) : ''}
-                            <div class="flex gap-8 mt-4 opacity-50">
-                                <button onclick="handleLike('${pid}', ${JSON.stringify(p.likes)})">
-                                    <i class="fa-solid fa-heart ${liked ? 'text-red-500 opacity-100' : ''}"></i>
-                                    <span class="text-[10px] font-black ml-1">${p.likes?.length || 0}</span>
-                                </button>
-                                <i class="fa-solid fa-comment" onclick="startChat('${p.uid}', '${p.name}', '${p.pfp}')"></i>
-                                <i class="fa-solid fa-share-nodes share-btn" onclick="sharePost('${p.text.replace(/'/g, "\\'")}', '${pid}')"></i>
-                            </div>
                         </div>`;
-
-                    if(p.uid === me.uid) {
-                        grid.innerHTML += `<div class="bg-zinc-900 aspect-square border border-white/5 p-2 text-[8px] opacity-20 overflow-hidden">${p.text}</div>`;
-                    }
                 });
             });
         }
-
-        window.handleLike = async (id, likes) => {
-            const r = doc(db, "hv_posts", id);
-            if(likes.includes(me.uid)) {
-                await updateDoc(r, { likes: arrayRemove(me.uid) });
-            } else {
-                await updateDoc(r, { likes: arrayUnion(me.uid) });
-                confetti({ particleCount: 30, spread: 60, origin: { y: 0.8 }, colors:['#10b981'] });
-            }
-        };
 
         function loadUsers() {
             onSnapshot(collection(db, "users"), snap => {
                 const list = document.getElementById('user-list'); list.innerHTML = '';
                 snap.forEach(d => {
                     if(d.id === me.uid) return;
-                    const u = d.data();
-                    list.innerHTML += `<div class="flex items-center gap-4 bg-zinc-900/50 p-3 rounded-2xl border border-white/5" onclick="startChat('${d.id}', '${u.name}', '${u.pfp}')">
-                        <img src="${u.pfp}" class="w-10 h-10 rounded-full object-cover">
-                        <div class="flex-1"><p class="font-black text-sm">${u.name}</p></div>
-                        <i class="fa-solid fa-paper-plane text-emerald-500 opacity-50"></i>
+                    list.innerHTML += `<div class="flex items-center gap-4 bg-zinc-900/40 p-4 rounded-2xl" onclick="startChat('${d.id}', '${d.data().name}', '${d.data().pfp}')">
+                        <img src="${d.data().pfp}" class="w-10 h-10 rounded-full">
+                        <div class="flex-1 font-black text-sm">${d.data().name}</div>
+                        <i class="fa-solid fa-microphone text-emerald-500 opacity-40"></i>
                     </div>`;
                 });
             });
@@ -242,15 +208,15 @@
         window.startChat = (tid, name, pfp) => {
             activeChatId = [me.uid, tid].sort().join("_");
             document.getElementById('chat-name').innerText = name;
-            document.getElementById('chat-pfp').src = pfp;
             openFullPage('page-chat');
             onSnapshot(query(collection(db, "chats", activeChatId, "messages"), orderBy("date", "asc")), snap => {
                 const box = document.getElementById('chat-messages'); box.innerHTML = '';
                 snap.forEach(d => {
                     const m = d.data();
                     const isMe = m.s === me.uid;
+                    const content = m.voice ? `<audio src="${m.voice}" controls class="audio-player"></audio>` : m.t;
                     box.innerHTML += `<div class="flex ${isMe ? 'justify-end' : 'justify-start'}">
-                        <div class="${isMe ? 'bg-emerald-600 text-black' : 'bg-zinc-900 text-white'} px-4 py-2 rounded-2xl text-xs font-bold max-w-[80%]">${m.t}</div>
+                        <div class="${isMe ? 'bg-emerald-600 text-black' : 'bg-zinc-900 text-white'} px-4 py-2 rounded-2xl text-xs font-bold">${content}</div>
                     </div>`;
                 });
                 box.scrollTop = box.scrollHeight;
@@ -270,22 +236,16 @@
                 const d = s.data();
                 document.getElementById('p-img').src = d.pfp;
                 document.getElementById('p-name').innerText = d.name;
-                document.getElementById('p-rank').innerHTML = `<span class="${d.name === 'Adil Hamza' ? 'badge-admin' : 'badge-user'}">${d.name === 'Adil Hamza' ? 'ADMIN' : 'ÜYE'}</span>`;
-                document.getElementById('p-bio-show').innerText = d.bio || "Biyografi eklenmemiş.";
-                document.getElementById('p-link-show').innerText = d.link || "";
-                document.getElementById('p-link-show').href = d.link || "#";
-                document.getElementById('b-in').value = d.bio || "";
-                document.getElementById('l-in').value = d.link || "";
+                document.getElementById('p-rank').innerHTML = `<span class="${d.name.includes('Adil Hamza') ? 'badge-admin' : 'badge-user'}">${d.name.includes('Adil Hamza') ? 'ADMIN' : 'ÜYE'}</span>`;
+                document.getElementById('p-bio-show').innerText = d.bio || "Hayra Vesile Üyesi";
             }
         }
 
         window.updateProfile = async () => {
-            await updateDoc(doc(db, "users", me.uid), { bio: document.getElementById('b-in').value, link: document.getElementById('l-in').value });
+            await updateDoc(doc(db, "users", me.uid), { bio: document.getElementById('b-in').value });
             syncProfile();
-            Swal.fire({ title: 'Başarılı!', text: 'Profil güncellendi.', icon: 'success', confirmButtonColor: '#10b981' });
+            Swal.fire('Başarılı', 'Profil güncellendi!', 'success');
         };
-
-        window.deletePost = async (id) => { if(confirm('Silinsin mi?')) await deleteDoc(doc(db, "hv_posts", id)); };
 
     </script>
 </body>
