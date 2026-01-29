@@ -282,3 +282,209 @@
     </script>
 </body>
 </html>
+<!doctype html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <title>Hayravesile Ultra Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        :root { --p: #059669; --bg: #fafafa; --c: #ffffff; --b: #dbdbdb; --t: #1a1a1a; }
+        body.dark { --bg: #000; --c: #000; --b: #262626; --t: #fff; }
+        * { font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.2s; }
+        body { background: var(--bg); color: var(--t); margin: 0; overflow-x: hidden; }
+        
+        /* HİKAYE HALKALARI */
+        .s-container { display: flex; gap: 12px; overflow-x: auto; padding: 15px; background: var(--c); border-bottom: 1px solid var(--b); scrollbar-width: none; }
+        .s-ring { width: 68px; height: 68px; padding: 2px; background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); border-radius: 50%; cursor: pointer; }
+        .s-inner { background: var(--c); padding: 2px; border-radius: 50%; width: 100%; height: 100%; }
+        .s-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+
+        /* POST KARTLARI */
+        .p-card { background: var(--c); border: 1px solid var(--b); border-radius: 12px; max-width: 470px; margin: 15px auto; overflow: hidden; }
+        .media-box { width: 100%; position: relative; background: #000; display: flex; align-items: center; justify-content: center; min-height: 300px; }
+        .media-box img, .media-box video { width: 100%; max-height: 600px; object-fit: contain; }
+
+        /* TAM EKRAN STORY MODAL */
+        #story-viewer { display: none; position: fixed; inset: 0; background: #000; z-index: 9999; flex-direction: column; align-items: center; justify-content: center; }
+        #story-progress { position: absolute; top: 10px; left: 10px; right: 10px; height: 2px; background: rgba(255,255,255,0.3); }
+        #story-bar { height: 100%; background: #fff; width: 0%; }
+
+        /* ALT NAVİGASYON */
+        .nav-fixed { position: fixed; bottom: 0; width: 100%; max-width: 500px; left: 50%; transform: translateX(-50%); background: var(--c); border-top: 1px solid var(--b); display: flex; justify-content: space-around; padding: 12px; z-index: 1000; }
+        .action-btn { font-size: 24px; cursor: pointer; }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <nav class="sticky top-0 bg-white dark:bg-black border-b dark:border-zinc-800 p-4 flex justify-between items-center z-50 max-w-[500px] mx-auto">
+        <h1 class="text-2xl font-black italic tracking-tighter" style="color: var(--p)">Hayravesile</h1>
+        <div class="flex gap-5 text-xl">
+            <i class="fa-regular fa-square-plus" onclick="openUpload()"></i>
+            <i class="fa-regular fa-paper-plane" onclick="alert('Mesajlaşma Yakında!')"></i>
+        </div>
+    </nav>
+
+    <main id="main-area" class="max-w-[500px] mx-auto pb-20">
+        <div class="s-container" id="story-list">
+            <div class="flex flex-col items-center gap-1" onclick="viewStory('https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=2070', 'Hayravesile')">
+                <div class="s-ring"><div class="s-inner"><img src="https://via.placeholder.com/100" class="s-img" id="user-story-img"></div></div>
+                <span class="text-[10px]">Senin Hikayen</span>
+            </div>
+        </div>
+        <div id="feed">
+            <div class="text-center py-20 animate-pulse text-gray-400">İyilikler Yükleniyor...</div>
+        </div>
+    </main>
+
+    <div id="story-viewer" onclick="closeStory()">
+        <div id="story-progress"><div id="story-bar"></div></div>
+        <div class="absolute top-5 left-5 flex items-center gap-2 text-white font-bold">
+            <img id="s-user-img" src="" class="w-8 h-8 rounded-full border">
+            <span id="s-user-name"></span>
+        </div>
+        <img id="s-content" src="" class="max-w-full max-h-[80vh]">
+    </div>
+
+    <div class="nav-fixed">
+        <i class="fa-solid fa-house action-btn" onclick="location.reload()"></i>
+        <i class="fa-solid fa-magnifying-glass action-btn"></i>
+        <i class="fa-solid fa-clapperboard action-btn"></i>
+        <i class="fa-solid fa-heart action-btn"></i>
+        <div id="nav-p-img" onclick="showSettings()" class="w-7 h-7 rounded-full border border-gray-400 overflow-hidden bg-gray-200"></div>
+    </div>
+
+    <div id="u-modal" class="hidden fixed inset-0 bg-black/90 z-[5000] flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-zinc-900 w-full max-w-md rounded-2xl">
+            <div class="p-4 border-b dark:border-zinc-800 flex justify-between font-bold">
+                <button onclick="closeUpload()" class="text-gray-400">Kapat</button>
+                <span>Paylaş</span>
+                <button onclick="saveToFirebase()" class="text-emerald-500" id="save-btn">Paylaş</button>
+            </div>
+            <div class="p-4">
+                <input type="text" id="m-link" placeholder="Fotoğraf veya MP4 Linki..." class="w-full p-3 bg-gray-100 dark:bg-zinc-800 rounded-lg mb-4 outline-none">
+                <textarea id="m-text" placeholder="Bir şeyler yaz..." class="w-full h-32 bg-transparent outline-none resize-none"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZO3lct-xzXAx79lbqgMP7s6WRCirWIHk",
+            authDomain: "hayravesile.firebaseapp.com",
+            projectId: "hayravesile",
+            storageBucket: "hayravesile.firebasestorage.app",
+            messagingSenderId: "980073667334",
+            appId: "1:980073667334:web:1f6260f0abf3bcc820dc87"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- AUTH ---
+        onAuthStateChanged(auth, user => {
+            if(user) {
+                document.getElementById('nav-p-img').innerHTML = `<img src="${user.photoURL}" class="w-full h-full object-cover">`;
+                document.getElementById('user-story-img').src = user.photoURL;
+                loadContent();
+            } else {
+                signInWithPopup(auth, new GoogleAuthProvider());
+            }
+        });
+
+        // --- STORY LOGIC ---
+        window.viewStory = (url, name) => {
+            const v = document.getElementById('story-viewer');
+            const b = document.getElementById('story-bar');
+            document.getElementById('s-content').src = url;
+            document.getElementById('s-user-name').innerText = name;
+            v.style.display = 'flex';
+            b.style.width = '0%';
+            let w = 0;
+            const int = setInterval(() => {
+                w += 1;
+                b.style.width = w + '%';
+                if(w >= 100) { clearInterval(int); closeStory(); }
+            }, 50);
+            window.currentInt = int;
+        };
+        window.closeStory = () => {
+            document.getElementById('story-viewer').style.display = 'none';
+            clearInterval(window.currentInt);
+        };
+
+        // --- POST LOGIC ---
+        window.openUpload = () => document.getElementById('u-modal').classList.remove('hidden');
+        window.closeUpload = () => document.getElementById('u-modal').classList.add('hidden');
+
+        window.saveToFirebase = async () => {
+            const l = document.getElementById('m-link').value;
+            const t = document.getElementById('m-text').value;
+            if(!t) return;
+            document.getElementById('save-btn').innerText = "...";
+            await addDoc(collection(db, "posts"), {
+                media: l, text: t, author: auth.currentUser.displayName,
+                avatar: auth.currentUser.photoURL, uid: auth.currentUser.uid,
+                likes: [], date: serverTimestamp()
+            });
+            closeUpload();
+            document.getElementById('m-link').value = "";
+            document.getElementById('m-text').value = "";
+            document.getElementById('save-btn').innerText = "Paylaş";
+        };
+
+        function loadContent() {
+            onSnapshot(query(collection(db, "posts"), orderBy("date", "desc")), snap => {
+                const f = document.getElementById('feed');
+                f.innerHTML = '';
+                snap.forEach(ds => {
+                    const p = ds.data();
+                    const isV = p.media?.includes('.mp4');
+                    const isL = p.likes?.includes(auth.currentUser.uid);
+                    f.innerHTML += `
+                        <div class="p-card shadow-sm">
+                            <div class="p-3 flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <img src="${p.avatar}" class="w-8 h-8 rounded-full border border-emerald-500">
+                                    <span class="font-bold text-sm">${p.author}</span>
+                                </div>
+                                <i class="fa-solid fa-ellipsis"></i>
+                            </div>
+                            <div class="media-box">
+                                ${isV ? `<video src="${p.media}" controls loop muted autoplay></video>` : `<img src="${p.media || 'https://via.placeholder.com/600'}" ondblclick="like('${ds.id}', ${JSON.stringify(p.likes)})">`}
+                            </div>
+                            <div class="p-4">
+                                <div class="flex gap-4 text-2xl mb-2">
+                                    <i class="${isL ? 'fa-solid fa-heart text-red-500' : 'fa-regular fa-heart'} cursor-pointer" onclick="like('${ds.id}', ${JSON.stringify(p.likes)})"></i>
+                                    <i class="fa-regular fa-comment"></i>
+                                    <i class="fa-brands fa-whatsapp text-green-500" onclick="window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent('${p.text}'))"></i>
+                                </div>
+                                <p class="font-bold text-sm mb-1">${p.likes?.length || 0} beğenme</p>
+                                <p class="text-sm"><span class="font-bold mr-2">${p.author}</span>${p.text}</p>
+                            </div>
+                        </div>`;
+                });
+            });
+        }
+
+        window.like = async (id, likes) => {
+            const ref = doc(db, "posts", id);
+            likes?.includes(auth.currentUser.uid) ? await updateDoc(ref, { likes: arrayRemove(auth.currentUser.uid) }) : await updateDoc(ref, { likes: arrayUnion(auth.currentUser.uid) });
+        };
+
+        window.showSettings = () => {
+            document.body.classList.toggle('dark');
+        };
+    </script>
+</body>
+</html>
