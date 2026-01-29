@@ -11,58 +11,44 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@1,900&display=swap');
+        
         :root { --hv: #10b981; --bg: #000; }
+        
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: #f4f4f5; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
         .stilli-logo { font-family: 'Playfair Display', serif; font-style: italic; background: linear-gradient(to right, #10b981, #34d399, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 200% auto; animation: shine 3s linear infinite; }
         @keyframes shine { to { background-position: 200% center; } }
 
+        /* SCROLL MOTORU */
         .scroller { flex: 1; overflow-y: auto; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; padding-bottom: 120px; }
         .scroller::-webkit-scrollbar { display: none; }
 
-        .post-card { border-radius: 35px; padding: 25px; margin: 15px; border: 1px solid rgba(255,255,255,0.05); position: relative; }
-        
-        /* AUTH TASARIMI */
-        .auth-card { background: #0a0a0b; border: 1px solid #1e1e21; border-radius: 40px; width: 100%; max-width: 380px; padding: 30px; }
-        .auth-input { background: #18181b; border: 1px solid #27272a; border-radius: 20px; padding: 18px; width: 100%; color: white; outline: none; margin-bottom: 12px; font-weight: 600; }
-        .auth-input:focus { border-color: var(--hv); }
-        .auth-btn { background: var(--hv); color: black; font-weight: 800; border-radius: 20px; padding: 18px; width: 100%; transition: 0.3s; }
+        /* KARTLAR */
+        .post-card { border-radius: 35px; padding: 25px; margin: 15px; border: 1px solid rgba(255,255,255,0.05); position: relative; transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .post-card:active { transform: scale(0.98); }
 
-        /* FOTOĞRAF DÜZELTME (Taşmayı Önleyen CSS) */
-        img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
+        /* SIDEBAR */
         .sidebar { position: fixed; left: -320px; top: 0; width: 300px; height: 100%; background: #070708; border-right: 1px solid #1a1a1c; z-index: 10000; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); padding: 50px 25px; }
         .sidebar.active { left: 0; box-shadow: 20px 0 100px #000; }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); z-index: 9999; display: none; }
 
+        /* MODAL */
         .modal-full { position: fixed; inset: 0; background: #000; z-index: 11000; display: none; flex-direction: column; animation: slideUp 0.4s ease; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        .bubble { max-width: 80%; padding: 16px 20px; border-radius: 26px; font-size: 15px; font-weight: 600; margin-bottom: 10px; }
+        /* DM BUBBLES */
+        .bubble { max-width: 80%; padding: 16px 20px; border-radius: 26px; font-size: 15px; font-weight: 600; margin-bottom: 10px; line-height: 1.4; }
         .sent { align-self: flex-end; background: var(--hv); color: #000; border-bottom-right-radius: 4px; }
         .received { align-self: flex-start; background: #222224; color: #fff; border-bottom-left-radius: 4px; }
 
-        .feather-btn { position: fixed; bottom: 35px; right: 25px; width: 70px; height: 70px; background: var(--hv); color: #000; border-radius: 25px; display: flex; align-items: center; justify-content: center; z-index: 5000; box-shadow: 0 15px 40px rgba(16,185,129,0.4); }
+        /* FEATHER BUTTON */
+        .feather-btn { position: fixed; bottom: 35px; right: 25px; width: 70px; height: 70px; background: var(--hv); color: #000; border-radius: 25px; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 40px rgba(16,185,129,0.4); z-index: 5000; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div id="overlay" class="overlay" onclick="UI.side()"></div>
-
-    <div id="auth-gate" class="fixed inset-0 bg-black z-[20000] flex flex-col items-center justify-center p-6 text-center overflow-y-auto">
-        <h1 class="stilli-logo text-6xl mb-10">İyilik</h1>
-        <div class="auth-card">
-            <input type="text" id="auth-nick" class="auth-input" placeholder="Kullanıcı Adı (Kayıt için)">
-            <input type="email" id="auth-mail" class="auth-input" placeholder="E-posta">
-            <input type="password" id="auth-pass" class="auth-input" placeholder="Şifre">
-            <button onclick="Auth.action()" class="auth-btn uppercase mb-4">Giriş / Kayıt</button>
-            <div class="text-zinc-600 font-bold text-xs mb-4">VEYA</div>
-            <button onclick="Auth.login()" class="w-full bg-white text-black py-4 rounded-[20px] font-black flex items-center justify-center gap-2">
-                <i class="fa-brands fa-google"></i> Google
-            </button>
-        </div>
-    </div>
 
     <aside id="sidebar" class="sidebar flex flex-col">
         <h2 class="stilli-logo text-4xl mb-12">İyilik</h2>
@@ -73,21 +59,26 @@
             <div class="h-px bg-zinc-900 my-4"></div>
             <div class="p-4 rounded-2xl flex items-center gap-4 text-blue-400 font-bold" onclick="UI.open('info-modal')"><i class="fa-solid fa-circle-info"></i> Uygulama Bilgisi</div>
         </nav>
-        <button onclick="Auth.logout()" class="text-red-500/40 text-[10px] font-black uppercase mb-4">Çıkış Yap</button>
+        <button onclick="Auth.logout()" class="text-red-500/40 text-[10px] font-black uppercase tracking-widest">Oturumu Kapat</button>
     </aside>
 
+    <div id="auth-gate" class="fixed inset-0 bg-black z-[20000] flex flex-col items-center justify-center p-10 text-center">
+        <h1 class="stilli-logo text-7xl mb-12">İyilik</h1>
+        <button onclick="Auth.login()" class="w-full max-w-sm bg-white text-black py-6 rounded-[30px] font-black text-xl active:scale-95 transition">Google ile Katıl</button>
+    </div>
+
     <div id="app" class="flex-1 flex flex-col" style="display: none;">
-        <header class="h-20 px-6 border-b border-zinc-900 flex justify-between items-center bg-black/60 backdrop-blur-xl">
+        <header class="h-20 px-6 border-b border-zinc-900 flex justify-between items-center bg-black/60 backdrop-blur-xl sticky top-0 z-50">
             <button onclick="UI.side()" class="text-emerald-500 text-2xl"><i class="fa-solid fa-bars-staggered"></i></button>
             <h1 class="stilli-logo text-2xl">Hayra Vesile</h1>
-            <div id="u-pfp" class="w-10 h-10 rounded-xl overflow-hidden bg-emerald-500 flex items-center justify-center font-bold text-black border border-white/10" onclick="UI.tab('profile')"></div>
+            <div id="u-pfp" class="w-10 h-10 rounded-xl overflow-hidden" onclick="UI.tab('profile')"></div>
         </header>
 
         <main class="scroller">
             <div id="tab-feed"><div id="post-list"></div></div>
             <div id="tab-users" class="hidden p-6"><h2 class="text-2xl font-black mb-8 text-emerald-500">İyilik Elçileri</h2><div id="user-list"></div></div>
             <div id="tab-profile" class="hidden p-8 flex flex-col items-center">
-                <div id="p-img-box" class="w-32 h-32 rounded-[40px] border-4 border-emerald-500 mb-6 flex items-center justify-center bg-zinc-900 text-4xl font-bold overflow-hidden"></div>
+                <img id="p-img" class="w-32 h-32 rounded-[40px] border-4 border-emerald-500 p-1 mb-6">
                 <h2 id="p-name" class="text-3xl font-black uppercase tracking-tighter">...</h2>
                 <div id="my-posts" class="w-full mt-10"></div>
             </div>
@@ -101,97 +92,86 @@
             <h2 class="text-emerald-500 font-black text-2xl uppercase">Uygulama Bilgisi</h2>
             <button onclick="UI.close('info-modal')" class="text-white text-3xl"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <div class="scroller space-y-6">
+        <div class="scroller text-zinc-400 space-y-6">
             <div class="bg-zinc-900/50 p-6 rounded-3xl border border-white/5">
-                <p class="text-zinc-400">Bu platform iyiliği yaymak için tasarlandı.</p>
+                <h3 class="text-white font-bold mb-2">Misyonumuz</h3>
+                <p>İyiliğin paylaşıldıkça çoğalacağına inanıyoruz. Bu uygulama, insanların yaptığı küçük veya büyük tüm hayırları bir araya getirmek için tasarlandı.</p>
             </div>
+            <div class="bg-zinc-900/50 p-6 rounded-3xl border border-white/5">
+                <h3 class="text-white font-bold mb-2">Özellikler</h3>
+                <ul class="list-disc list-inside space-y-2">
+                    <li>Kişiye özel renkli kartlarla paylaşım.</li>
+                    <li>Uçtan uca mesajlaşma sistemi.</li>
+                    <li>İyilik elçileriyle etkileşim.</li>
+                    <li>Tamamen reklamsız ve özgür deneyim.</li>
+                </ul>
+            </div>
+            <p class="text-center text-[10px] font-black uppercase tracking-[0.5em] pt-10">Sürüm 571 Ultimate Pro</p>
         </div>
     </div>
 
     <div id="dm-modal" class="modal-full">
         <div class="h-20 px-6 border-b border-zinc-900 flex items-center gap-4 bg-zinc-950">
             <button onclick="UI.close('dm-modal')" class="text-emerald-500 text-2xl"><i class="fa-solid fa-chevron-left"></i></button>
-            <span id="dm-name" class="font-black text-sm uppercase">Sohbet</span>
+            <span id="dm-name" class="font-black text-sm uppercase tracking-widest">İyilik Sohbeti</span>
         </div>
         <div id="dm-box" class="scroller p-6 flex flex-col"></div>
         <div class="p-6 bg-black border-t border-zinc-900 flex gap-3">
-            <input type="text" id="dm-in" class="flex-1 bg-zinc-900 p-5 rounded-3xl outline-none font-bold text-white" placeholder="Mesaj gönder...">
-            <button id="dm-send" class="bg-emerald-500 text-black w-16 h-16 rounded-3xl flex items-center justify-center"><i class="fa-solid fa-paper-plane"></i></button>
+            <input type="text" id="dm-in" class="flex-1 bg-zinc-900 p-5 rounded-3xl outline-none font-bold" placeholder="Mesaj gönder...">
+            <button id="dm-send" class="bg-emerald-500 text-black w-16 h-16 rounded-3xl flex items-center justify-center transition active:scale-90"><i class="fa-solid fa-paper-plane"></i></button>
         </div>
     </div>
 
     <div id="post-modal" class="modal-full p-8">
         <div class="flex justify-between items-center mb-10">
             <button onclick="UI.close('post-modal')" class="text-zinc-600 font-bold uppercase">Kapat</button>
-            <button id="pub-btn" class="bg-emerald-500 text-black px-10 py-4 rounded-full font-black text-xs uppercase">Paylaş</button>
+            <button id="pub-btn" class="bg-emerald-500 text-black px-10 py-4 rounded-full font-black text-xs uppercase shadow-xl">Paylaş</button>
         </div>
-        <textarea id="post-in" class="w-full bg-transparent text-white text-3xl font-bold h-64 outline-none resize-none mb-10" placeholder="Hayra nasıl vesile oldun?"></textarea>
+        <textarea id="post-in" class="w-full bg-transparent text-white text-3xl font-bold h-64 outline-none resize-none mb-10" placeholder="Bugün hayra nasıl vesile oldun?"></textarea>
         <div class="flex gap-4" id="color-opts">
-            <div class="w-12 h-12 rounded-2xl border-2 border-white" style="background: #0d0d0f;" data-c="#0d0d0f"></div>
-            <div class="w-12 h-12 rounded-2xl" style="background: #064e3b;" data-c="#064e3b"></div>
-            <div class="w-12 h-12 rounded-2xl" style="background: #1e3a8a;" data-c="#1e3a8a"></div>
+            <div class="w-12 h-12 rounded-2xl cursor-pointer border-2 border-white" style="background: #0d0d0f;" data-c="#0d0d0f"></div>
+            <div class="w-12 h-12 rounded-2xl cursor-pointer" style="background: #064e3b;" data-c="#064e3b"></div>
+            <div class="w-12 h-12 rounded-2xl cursor-pointer" style="background: #1e3a8a;" data-c="#1e3a8a"></div>
+            <div class="w-12 h-12 rounded-2xl cursor-pointer" style="background: #581c87;" data-c="#581c87"></div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, updateDoc, setDoc, deleteDoc, arrayUnion, arrayRemove, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, updateDoc, getDoc, setDoc, deleteDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const config = { apiKey: "AIzaSyDZO3lct-xzXAx79lbqgMP7s6WRCirWIHk", authDomain: "hayravesile.firebaseapp.com", projectId: "hayravesile", storageBucket: "hayravesile.appspot.com", messagingSenderId: "980073667334", appId: "1:980073667334:web:1f6260f0abf3bcc820dc87" };
         const app = initializeApp(config), auth = getAuth(app), db = getFirestore(app);
 
         let me = null, activeRoom = null, roomUnsub = null, selCol = "#0d0d0f";
-        const ADMIN_UID = "BURAYA_KENDI_UID_YAZ"; 
 
         window.Auth = {
             login: () => signInWithPopup(auth, new GoogleAuthProvider()),
-            action: async () => {
-                const nick = document.getElementById('auth-nick').value.trim();
-                const mail = document.getElementById('auth-mail').value.trim();
-                const pass = document.getElementById('auth-pass').value.trim();
-                if(!mail || !pass) return Swal.fire('Hata','E-posta ve şifre girin.','error');
-                
-                try {
-                    await signInWithEmailAndPassword(auth, mail, pass);
-                } catch(e) {
-                    if(nick) {
-                        try {
-                            const res = await createUserWithEmailAndPassword(auth, mail, pass);
-                            await updateProfile(res.user, { displayName: nick });
-                            location.reload();
-                        } catch(err) { Swal.fire('Hata', 'Kayıt başarısız: ' + err.message, 'error'); }
-                    } else {
-                        Swal.fire('Bilgi','Bu e-posta kayıtlı değil. Kayıt olmak için Kullanıcı Adı da yazın.','question');
-                    }
-                }
-            },
             logout: () => signOut(auth).then(() => location.reload())
         };
 
         onAuthStateChanged(auth, async u => {
             if(u) {
-                const userDoc = await getDoc(doc(db, "users", u.uid));
-                if(userDoc.exists() && userDoc.data().banned) {
-                    Swal.fire('Hesap Kısıtlandı','Hesabınız banlandı.','error');
-                    Auth.logout(); return;
-                }
                 me = u;
                 document.getElementById('auth-gate').style.display = 'none';
                 document.getElementById('app').style.display = 'flex';
-                document.getElementById('u-pfp').innerHTML = u.photoURL ? `<img src="${u.photoURL}">` : u.displayName.charAt(0);
-                await setDoc(doc(db, "users", u.uid), { name: u.displayName, pfp: u.photoURL || '', bio: "İyiliğe vesile oldu.", active: true }, { merge: true });
+                document.getElementById('u-pfp').innerHTML = `<img src="${u.photoURL}" class="w-full h-full object-cover">`;
+                await setDoc(doc(db, "users", u.uid), { name: u.displayName, pfp: u.photoURL, bio: "İyiliğe vesile oldu." }, { merge: true });
                 Data.sync();
             }
         });
 
-        // Diğer Data ve UI fonksiyonları aynı...
         window.UI = {
             side: () => { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').style.display = document.getElementById('sidebar').classList.contains('active') ? 'block' : 'none'; },
             tab: (t) => { document.querySelectorAll('main > div').forEach(d => d.classList.add('hidden')); document.getElementById('tab-'+t).classList.remove('hidden'); UI.side(); if(t === 'profile') Data.syncProfile(); },
             open: (id) => document.getElementById(id).style.display = 'flex',
             close: (id) => { document.getElementById(id).style.display = 'none'; if(id === 'dm-modal' && roomUnsub) roomUnsub(); }
         };
+
+        document.querySelectorAll('#color-opts > div').forEach(d => {
+            d.onclick = () => { document.querySelectorAll('#color-opts > div').forEach(x => x.classList.remove('border-2','border-white')); d.classList.add('border-2','border-white'); selCol = d.dataset.c; };
+        });
 
         window.Data = {
             sync: () => { Data.syncFeed(); Data.syncUsers(); },
@@ -203,45 +183,37 @@
             },
             postMarkup: (id, p) => {
                 const liked = p.likes?.includes(me.uid);
-                const isAdmin = me.uid === ADMIN_UID;
                 return `
                     <div class="post-card" style="background: ${p.color || '#0d0d0f'}">
                         <div class="flex items-center gap-4 mb-5">
-                            <div class="w-12 h-12 rounded-2xl bg-emerald-500 flex items-center justify-center text-black font-bold overflow-hidden">
-                                ${p.pfp ? `<img src="${p.pfp}">` : p.name.charAt(0)}
-                            </div>
-                            <div class="flex-1"><span class="text-sm font-black uppercase text-white">${p.name}</span><span class="text-[10px] text-emerald-500 font-bold block uppercase">İyilik Elçisi</span></div>
-                            ${(me.uid === p.uid || isAdmin) ? `<i onclick="Data.delPost('${id}')" class="fa-solid fa-trash text-white/20"></i>` : ''}
+                            <img src="${p.pfp}" class="w-12 h-12 rounded-2xl">
+                            <div class="flex-1"><span class="text-sm font-black uppercase text-white">${p.name}</span><span class="text-[10px] text-emerald-500 font-bold block uppercase">İyiliğe Vesile Oldu</span></div>
+                            ${me.uid === p.uid ? `<i onclick="Data.delPost('${id}')" class="fa-solid fa-trash text-white/20"></i>` : ''}
                         </div>
                         <p class="text-lg font-bold text-white mb-6">${p.text}</p>
-                        <div class="flex items-center gap-2 cursor-pointer" onclick="Data.like('${id}', ${liked})">
-                            <i class="fa-${liked ? 'solid' : 'regular'} fa-heart text-2xl ${liked ? 'text-emerald-500' : 'text-white/20'}"></i>
-                            <span class="text-xs font-black text-white">${p.likes?.length || 0}</span>
+                        <div class="flex items-center gap-2 cursor-pointer" onclick="Data.like('${id}', ${liked}, this)">
+                            <i class="fa-${liked ? 'solid' : 'regular'} fa-heart text-2xl ${liked ? 'text-red-500' : 'text-white/20'}"></i>
+                            <span class="text-xs font-black">${p.likes?.length || 0}</span>
                         </div>
                     </div>`;
             },
-            like: async (id, s) => { await updateDoc(doc(db, "posts", id), { likes: s ? arrayRemove(me.uid) : arrayUnion(me.uid) }); },
+            like: async (id, s, el) => {
+                el.querySelector('i').classList.add('pop');
+                await updateDoc(doc(db, "posts", id), { likes: s ? arrayRemove(me.uid) : arrayUnion(me.uid) });
+            },
             delPost: async (id) => { if(confirm("Silinsin mi?")) await deleteDoc(doc(db, "posts", id)); },
             syncUsers: () => {
                 onSnapshot(collection(db, "users"), snap => {
                     const l = document.getElementById('user-list'); l.innerHTML = '';
                     snap.forEach(d => {
                         if(d.id === me.uid) return;
-                        const u = d.data();
-                        l.innerHTML += `
-                        <div class="bg-zinc-900/40 p-6 rounded-[30px] flex items-center justify-between mb-4">
-                            <div class="flex items-center gap-4" onclick="Data.openDm('${d.id}', '${u.name}')">
-                                <div class="w-14 h-14 rounded-2xl bg-zinc-800 flex items-center justify-center font-bold text-white overflow-hidden">
-                                    ${u.pfp ? `<img src="${u.pfp}">` : u.name.charAt(0)}
-                                </div>
-                                <span class="font-black text-sm uppercase">${u.name}</span>
-                            </div>
-                            ${me.uid === ADMIN_UID ? `<button onclick="Data.banUser('${d.id}')" class="text-red-500 text-xs font-bold">BAN</button>` : `<i class="fa-solid fa-paper-plane text-emerald-500"></i>`}
+                        l.innerHTML += `<div class="bg-zinc-900/40 p-6 rounded-[30px] flex items-center justify-between mb-4" onclick="Data.openDm('${d.id}', '${d.data().name}')">
+                            <div class="flex items-center gap-4"><img src="${d.data().pfp}" class="w-14 h-14 rounded-2xl"><span class="font-black text-sm uppercase">${d.data().name}</span></div>
+                            <i class="fa-solid fa-paper-plane text-emerald-500"></i>
                         </div>`;
                     });
                 });
             },
-            banUser: async (uid) => { if(confirm("Banlansın mı?")) await updateDoc(doc(db, "users", uid), { banned: true }); },
             openDm: (tid, name) => {
                 activeRoom = [me.uid, tid].sort().join("_");
                 document.getElementById('dm-name').innerText = name;
@@ -254,7 +226,7 @@
                 });
             },
             syncProfile: () => {
-                document.getElementById('p-img-box').innerHTML = me.photoURL ? `<img src="${me.photoURL}">` : me.displayName.charAt(0);
+                document.getElementById('p-img').src = me.photoURL;
                 document.getElementById('p-name').innerText = me.displayName;
                 onSnapshot(query(collection(db, "posts"), orderBy("time", "desc")), snap => {
                     const l = document.getElementById('my-posts'); l.innerHTML = '';
@@ -266,7 +238,7 @@
         document.getElementById('pub-btn').onclick = async () => {
             const v = document.getElementById('post-in').value.trim();
             if(v) {
-                await addDoc(collection(db, "posts"), { text: v, uid: me.uid, name: me.displayName, pfp: me.photoURL || '', time: Date.now(), likes: [], color: selCol });
+                await addDoc(collection(db, "posts"), { text: v, uid: me.uid, name: me.displayName, pfp: me.photoURL, time: Date.now(), likes: [], color: selCol });
                 document.getElementById('post-in').value = ''; UI.close('post-modal');
             }
         };
@@ -278,6 +250,8 @@
                 i.value = '';
             }
         };
+        document.getElementById('dm-in').onkeydown = (e) => { if(e.key === 'Enter') document.getElementById('dm-send').click(); };
+
     </script>
 </body>
 </html>
