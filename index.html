@@ -3,77 +3,127 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-    <title>Hayravesile | Instagram Pro</title>
+    <title>Hayravesile | Premium Social</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background: #fafafa; transition: 0.3s; }
-        body.dark { background: #000; color: #fff; }
-        .nav-bottom { position: fixed; bottom: 0; width: 100%; max-width: 500px; left: 50%; transform: translateX(-50%); background: #fff; border-top: 1px solid #dbdbdb; z-index: 1000; }
-        .dark .nav-bottom, .dark .post-card, .dark .modal-content { background: #000; border-color: #262626; color: #fff; }
-        .post-card { background: #fff; border: 1px solid #dbdbdb; margin-bottom: 12px; }
-        .ig-input { width: 100%; background: #fafafa; border: 1px solid #dbdbdb; padding: 10px; border-radius: 5px; font-size: 14px; margin-bottom: 10px; outline: none; }
-        .dark .ig-input { background: #121212; border-color: #363636; color: #fff; }
-        .main-content { max-width: 500px; margin: 0 auto; padding-top: 10px; padding-bottom: 70px; }
-        .hidden { display: none; }
-        video { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        
+        :root {
+            --ig-primary: #059669; /* Senin istediğin yeşil */
+            --ig-bg: #fafafa;
+            --ig-card: #ffffff;
+            --ig-text: #1a1a1a;
+            --ig-border: #efefef;
+        }
+
+        body.dark {
+            --ig-bg: #000000;
+            --ig-card: #000000;
+            --ig-text: #ffffff;
+            --ig-border: #262626;
+        }
+
+        * { font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.3s, color 0.3s; }
+        body { background: var(--ig-bg); color: var(--ig-text); margin: 0; }
+
+        /* MASAÜSTÜ YAN PANEL */
+        @media (min-width: 768px) {
+            .side-bar { width: 250px; position: fixed; height: 100vh; border-right: 1px solid var(--ig-border); padding: 20px; }
+            .main-view { margin-left: 250px; padding: 30px 0; }
+            .bottom-bar { display: none; }
+        }
+
+        /* MOBİL ALT PANEL */
+        @media (max-width: 767px) {
+            .side-bar { display: none; }
+            .bottom-bar { position: fixed; bottom: 0; width: 100%; height: 60px; background: var(--ig-card); border-top: 1px solid var(--ig-border); display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
+            .main-view { margin-bottom: 70px; }
+        }
+
+        /* POST TASARIMI */
+        .post-card { background: var(--ig-card); border: 1px solid var(--ig-border); margin-bottom: 25px; border-radius: 12px; overflow: hidden; max-width: 470px; margin-inline: auto; }
+        .post-media { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-top: 1px solid var(--ig-border); border-bottom: 1px solid var(--ig-border); }
+        
+        /* GİRİŞ EKRANI */
+        #auth-screen { position: fixed; inset: 0; background: var(--ig-bg); z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .ig-input { width: 100%; max-width: 350px; background: #f0f2f5; border: 1px solid #ddd; padding: 12px; border-radius: 8px; margin-bottom: 10px; outline: none; font-size: 14px; }
+        .dark .ig-input { background: #121212; border-color: #333; color: white; }
+
+        /* BUTONLAR */
+        .btn-primary { background: var(--ig-primary); color: white; padding: 10px 20px; border-radius: 8px; font-weight: 700; width: 100%; max-width: 350px; }
+        .action-icon { font-size: 24px; cursor: pointer; transition: transform 0.1s; }
+        .action-icon:active { transform: scale(0.9); }
+        .heart-active { color: #ed4956; animation: like-anim 0.3s ease-in-out; }
+        
+        @keyframes like-anim { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
     </style>
 </head>
-<body id="appBody">
+<body>
 
-    <div id="authPage" class="fixed inset-0 bg-white z-[3000] flex flex-col items-center justify-center p-8 dark:bg-black">
-        <h1 class="text-4xl font-bold italic mb-8 tracking-tighter">Hayravesile</h1>
-        <div id="loginForm" class="w-full max-w-sm">
-            <input type="text" id="authEmail" placeholder="E-posta" class="ig-input">
-            <input type="password" id="authPass" placeholder="Şifre (En az 8 karakter)" class="ig-input">
-            <button onclick="handleAuth('login')" class="w-full bg-blue-500 text-white py-2 rounded font-bold mb-4">Giriş Yap</button>
-            <p class="text-sm text-gray-500">Hesabın yok mu? <span onclick="toggleAuthMode()" class="text-blue-500 font-bold cursor-pointer">Kaydol</span></p>
+    <div id="auth-screen">
+        <h1 class="text-4xl font-black italic mb-10 tracking-tighter" style="color: var(--ig-primary)">Hayravesile</h1>
+        
+        <div id="login-form" class="w-full flex flex-col items-center">
+            <input type="email" id="email" placeholder="E-posta" class="ig-input">
+            <input type="password" id="password" placeholder="Şifre (Min 8 Karakter)" class="ig-input">
+            <button onclick="authAction('login')" class="btn-primary mb-4">Giriş Yap</button>
+            <p class="text-sm">Hesabın yok mu? <span class="font-bold cursor-pointer" style="color:var(--ig-primary)" onclick="toggleAuth(true)">Kaydol</span></p>
         </div>
-        <div id="registerForm" class="w-full max-w-sm hidden">
-            <input type="text" id="regName" placeholder="Ad Soyad" class="ig-input">
-            <input type="email" id="regEmail" placeholder="E-posta" class="ig-input">
-            <input type="password" id="regPass" placeholder="Şifre (Min 8 Karakter)" class="ig-input">
-            <button onclick="handleAuth('register')" class="w-full bg-blue-500 text-white py-2 rounded font-bold mb-4">Kaydol</button>
-            <p class="text-sm text-gray-500">Hesabın var mı? <span onclick="toggleAuthMode()" class="text-blue-500 font-bold cursor-pointer">Giriş Yap</span></p>
+
+        <div id="register-form" class="w-full flex flex-col items-center hidden">
+            <input type="text" id="reg-name" placeholder="Ad Soyad" class="ig-input">
+            <input type="email" id="reg-email" placeholder="E-posta" class="ig-input">
+            <input type="password" id="reg-pass" placeholder="Şifre (Min 8 Karakter)" class="ig-input">
+            <button onclick="authAction('register')" class="btn-primary mb-4">Kaydol</button>
+            <p class="text-sm">Zaten üye misin? <span class="font-bold cursor-pointer" style="color:var(--ig-primary)" onclick="toggleAuth(false)">Giriş Yap</span></p>
         </div>
-        <div class="mt-4 border-t w-full max-w-sm pt-4 flex justify-center">
-            <button onclick="loginWithGoogle()" class="flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-gray-300">
-                <i class="fa-brands fa-google text-red-500"></i> Google ile devam et
+        
+        <div class="mt-8 pt-6 border-t w-full max-w-[350px] text-center text-gray-400">
+            <button onclick="googleSign()" class="flex items-center gap-2 justify-center w-full font-bold">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="18"> Google ile Devam Et
             </button>
         </div>
     </div>
 
-    <nav class="sticky top-0 bg-white border-b p-3 flex justify-between items-center z-50 dark:bg-black dark:border-zinc-800 max-w-[500px] mx-auto">
-        <h1 class="text-2xl font-bold italic tracking-tighter">Hayravesile</h1>
-        <div class="flex gap-4 text-xl">
-            <i class="fa-regular fa-heart"></i>
-            <i class="fa-regular fa-paper-plane" onclick="showPage('messages')"></i>
-        </div>
-    </nav>
+    <aside class="side-bar">
+        <h2 class="text-2xl font-black italic mb-10 tracking-tighter" style="color: var(--ig-primary)">Hayravesile</h2>
+        <nav class="space-y-6">
+            <div class="flex items-center gap-4 text-lg font-bold cursor-pointer" onclick="location.reload()"><i class="fa-solid fa-house"></i> Ana Sayfa</div>
+            <div class="flex items-center gap-4 text-lg cursor-pointer"><i class="fa-solid fa-magnifying-glass"></i> Keşfet</div>
+            <div class="flex items-center gap-4 text-lg cursor-pointer" onclick="openCreate()"><i class="fa-regular fa-square-plus"></i> Oluştur</div>
+            <div class="flex items-center gap-4 text-lg cursor-pointer" onclick="toggleMode()"><i class="fa-solid fa-moon"></i> Mod Değiştir</div>
+            <div class="flex items-center gap-4 text-lg cursor-pointer" onclick="showSettings()"><i class="fa-solid fa-gear"></i> Ayarlar</div>
+        </nav>
+    </aside>
 
-    <main class="main-content" id="mainArea">
-        <div id="feed"></div>
+    <main class="main-view">
+        <div id="app-feed" class="px-2">
+            <div class="flex flex-col items-center mt-20 text-gray-300">
+                <i class="fa-solid fa-circle-notch animate-spin text-4xl mb-4"></i>
+                <p>Uygulama Yükleniyor...</p>
+            </div>
+        </div>
     </main>
 
-    <div class="nav-bottom flex justify-around py-3 text-2xl">
-        <i class="fa-solid fa-house" onclick="showPage('home')"></i>
-        <i class="fa-solid fa-magnifying-glass"></i>
-        <i class="fa-regular fa-square-plus" onclick="openPostModal()"></i>
-        <i class="fa-solid fa-clapperboard"></i>
-        <div id="userIcon" onclick="showPage('settings')" class="w-7 h-7 rounded-full border border-gray-300 overflow-hidden bg-gray-200"></div>
+    <div class="bottom-bar">
+        <i class="fa-solid fa-house action-icon" onclick="location.reload()"></i>
+        <i class="fa-solid fa-magnifying-glass action-icon"></i>
+        <i class="fa-regular fa-square-plus action-icon" onclick="openCreate()"></i>
+        <i class="fa-solid fa-clapperboard action-icon"></i>
+        <div id="my-profile-icon" onclick="showSettings()" class="w-7 h-7 rounded-full border border-gray-300 overflow-hidden"></div>
     </div>
 
-    <div id="postModal" class="hidden fixed inset-0 bg-black/80 z-[2000] flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-zinc-900 rounded-xl w-full max-w-md modal-content">
-            <div class="border-b p-3 flex justify-between font-bold">
-                <span onclick="closePostModal()">İptal</span>
-                <span>Yeni Gönderi</span>
-                <span onclick="uploadPost()" class="text-blue-500">Paylaş</span>
+    <div id="create-modal" class="hidden fixed inset-0 bg-black/80 z-[6000] flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-zinc-900 w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl">
+            <div class="p-4 border-b flex justify-between font-bold dark:border-zinc-800">
+                <span class="text-gray-400" onclick="closeCreate()">İptal</span>
+                <span>Yeni Gönderi Oluştur</span>
+                <span class="text-blue-500 cursor-pointer" onclick="publish()">Paylaş</span>
             </div>
-            <div class="p-4">
-                <input type="text" id="postMedia" placeholder="Fotoğraf veya MP4 Video Linki" class="ig-input">
-                <textarea id="postDesc" placeholder="Açıklama yaz..." class="w-full h-32 outline-none dark:bg-transparent resize-none text-sm"></textarea>
+            <div class="p-6">
+                <input type="text" id="p-media" placeholder="Resim veya MP4 Video Linki..." class="ig-input w-full mb-4">
+                <textarea id="p-desc" placeholder="Harika bir açıklama yaz..." class="w-full h-40 outline-none dark:bg-transparent resize-none"></textarea>
             </div>
         </div>
     </div>
@@ -96,108 +146,114 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- AUTH İŞLEMLERİ ---
-        window.toggleAuthMode = () => {
-            document.getElementById('loginForm').classList.toggle('hidden');
-            document.getElementById('registerForm').classList.toggle('hidden');
+        // --- AUTH & NAV ---
+        window.toggleAuth = (isReg) => {
+            document.getElementById('login-form').classList.toggle('hidden', isReg);
+            document.getElementById('register-form').classList.toggle('hidden', !isReg);
         };
 
-        window.handleAuth = async (mode) => {
-            const email = mode === 'login' ? document.getElementById('authEmail').value : document.getElementById('regEmail').value;
-            const pass = mode === 'login' ? document.getElementById('authPass').value : document.getElementById('regPass').value;
-            
-            if(pass.length < 8) return alert("Şifre en az 8 karakter olmalıdır!");
+        window.authAction = async (type) => {
+            const email = document.getElementById(type === 'login' ? 'email' : 'reg-email').value;
+            const pass = document.getElementById(type === 'login' ? 'password' : 'reg-pass').value;
+            if(pass.length < 8) return alert("Şifre en az 8 karakter!");
 
             try {
-                if(mode === 'register') {
-                    const name = document.getElementById('regName').value;
+                if(type === 'register') {
+                    const name = document.getElementById('reg-name').value;
                     const res = await createUserWithEmailAndPassword(auth, email, pass);
                     await updateProfile(res.user, { displayName: name });
                 } else {
                     await signInWithEmailAndPassword(auth, email, pass);
                 }
-                document.getElementById('authPage').classList.add('hidden');
-            } catch (e) { alert("Hata: " + e.message); }
+                document.getElementById('auth-screen').style.display = 'none';
+            } catch (e) { alert(e.message); }
         };
 
-        window.loginWithGoogle = () => signInWithPopup(auth, new GoogleAuthProvider()).then(() => document.getElementById('authPage').classList.add('hidden'));
+        window.googleSign = () => signInWithPopup(auth, new GoogleAuthProvider()).then(() => document.getElementById('auth-screen').style.display = 'none');
 
         onAuthStateChanged(auth, user => {
             if(user) {
-                document.getElementById('authPage').classList.add('hidden');
-                document.getElementById('userIcon').innerHTML = user.photoURL ? `<img src="${user.photoURL}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-user m-1 text-gray-400"></i>`;
-                loadFeed();
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('my-profile-icon').innerHTML = user.photoURL ? `<img src="${user.photoURL}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-user p-1 text-gray-400"></i>`;
+                startFeed();
             }
         });
 
-        // --- SAYFA YÖNETİMİ ---
-        window.showPage = (page) => {
-            const area = document.getElementById('mainArea');
-            if(page === 'settings') {
-                area.innerHTML = `
-                    <div class="p-6">
-                        <h2 class="text-xl font-bold mb-6">Ayarlar</h2>
-                        <div class="space-y-4">
-                            <div class="flex justify-between border-b pb-2" onclick="document.body.classList.toggle('dark')"><span>Karanlık Mod</span><i class="fa-solid fa-moon"></i></div>
-                            <div class="flex justify-between border-b pb-2"><span>Hesap Bilgileri</span><i class="fa-solid fa-chevron-right"></i></div>
-                            <div class="flex justify-between border-b pb-2"><span>Şifre Değiştir</span><i class="fa-solid fa-chevron-right"></i></div>
-                            <div class="flex justify-between border-b pb-2 text-red-500" onclick="auth.signOut().then(()=>location.reload())"><span>Çıkış Yap</span><i class="fa-solid fa-right-from-bracket"></i></div>
-                        </div>
-                    </div>`;
-            } else if(page === 'messages') {
-                area.innerHTML = `<div class="p-20 text-center text-gray-500 text-sm">Mesajlaşma özelliği çok yakında!</div>`;
-            } else {
-                location.reload();
-            }
+        // --- MODAL KONTROL ---
+        window.openCreate = () => document.getElementById('create-modal').classList.remove('hidden');
+        window.closeCreate = () => document.getElementById('create-modal').classList.add('hidden');
+        window.toggleMode = () => document.body.classList.toggle('dark');
+
+        window.showSettings = () => {
+            document.getElementById('app-feed').innerHTML = `
+                <div class="max-w-md mx-auto mt-10 p-6 bg-white dark:bg-zinc-900 rounded-2xl shadow">
+                    <h2 class="text-2xl font-bold mb-6">Ayarlar</h2>
+                    <div class="space-y-4 font-medium">
+                        <div class="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-lg"><i class="fa-solid fa-user-gear"></i> Profili Düzenle</div>
+                        <div class="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-lg"><i class="fa-solid fa-lock"></i> Gizlilik</div>
+                        <div class="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-lg text-red-500" onclick="auth.signOut().then(()=>location.reload())"><i class="fa-solid fa-power-off"></i> Çıkış Yap</div>
+                    </div>
+                </div>`;
         };
 
-        // --- POST PAYLAŞMA ---
-        window.openPostModal = () => document.getElementById('postModal').classList.remove('hidden');
-        window.closePostModal = () => document.getElementById('postModal').classList.add('hidden');
+        // --- VERİ PAYLAŞMA ---
+        window.publish = async () => {
+            const media = document.getElementById('p-media').value;
+            const desc = document.getElementById('p-desc').value;
+            if(!desc) return alert("Mesaj boş olamaz!");
 
-        window.uploadPost = async () => {
-            const media = document.getElementById('postMedia').value;
-            const desc = document.getElementById('postDesc').value;
-            if(!desc) return;
             await addDoc(collection(db, "posts"), {
                 media, desc, author: auth.currentUser.displayName,
                 uid: auth.currentUser.uid, avatar: auth.currentUser.photoURL,
                 likes: [], comments: [], time: serverTimestamp()
             });
-            closePostModal();
+            closeCreate();
+            document.getElementById('p-media').value = '';
+            document.getElementById('p-desc').value = '';
         };
 
-        // --- AKIŞI YÜKLE (MP4 VE YORUM DESTEKLİ) ---
-        function loadFeed() {
+        // --- ANA AKIŞ ( FEED ) ---
+        function startFeed() {
             onSnapshot(query(collection(db, "posts"), orderBy("time", "desc")), snap => {
-                const feed = document.getElementById('feed');
-                feed.innerHTML = '';
-                snap.forEach(d => {
-                    const p = d.data();
-                    const isVideo = p.media && p.media.includes('.mp4');
+                const container = document.getElementById('app-feed');
+                container.innerHTML = '';
+                snap.forEach(docSnap => {
+                    const p = docSnap.data();
                     const isLiked = p.likes?.includes(auth.currentUser.uid);
-                    
-                    feed.innerHTML += `
-                        <div class="post-card">
-                            <div class="p-3 flex items-center gap-2">
-                                <div class="w-8 h-8 rounded-full border bg-gray-200 overflow-hidden">${p.avatar ? `<img src="${p.avatar}">` : ''}</div>
-                                <span class="font-bold text-sm">${p.author}</span>
+                    const isVideo = p.media?.includes('.mp4');
+
+                    container.innerHTML += `
+                        <div class="post-card shadow-sm">
+                            <div class="p-4 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-full overflow-hidden border border-emerald-500">${p.avatar ? `<img src="${p.avatar}">` : `<i class="fa-solid fa-user p-2"></i>`}</div>
+                                    <span class="font-bold text-sm tracking-tight">${p.author}</span>
+                                </div>
+                                <i class="fa-solid fa-ellipsis"></i>
                             </div>
-                            ${isVideo ? `<video src="${p.media}" controls loop></video>` : `<img src="${p.media || 'https://via.placeholder.com/500'}" class="w-full shadow-inner">`}
-                            <div class="p-3">
-                                <div class="flex gap-4 text-2xl mb-2">
-                                    <i class="${isLiked ? 'fa-solid fa-heart text-red-500' : 'fa-regular fa-heart'}" onclick="handleLike('${d.id}', ${JSON.stringify(p.likes)})"></i>
-                                    <i class="fa-regular fa-comment" onclick="focusComment('${d.id}')"></i>
-                                    <i class="fa-brands fa-whatsapp text-green-500" onclick="shareWhatsapp('${p.desc}')"></i>
+                            
+                            ${isVideo ? `<video src="${p.media}" class="w-full" controls loop muted autoplay></video>` : `<img src="${p.media || 'https://via.placeholder.com/600x600?text=Hayravesile'}" class="post-media" ondblclick="likePost('${docSnap.id}', ${JSON.stringify(p.likes)})">`}
+
+                            <div class="p-4">
+                                <div class="flex justify-between items-center mb-4">
+                                    <div class="flex gap-4 text-2xl">
+                                        <i class="${isLiked ? 'fa-solid fa-heart heart-active' : 'fa-regular fa-heart'} cursor-pointer" onclick="likePost('${docSnap.id}', ${JSON.stringify(p.likes)})"></i>
+                                        <i class="fa-regular fa-comment cursor-pointer"></i>
+                                        <i class="fa-regular fa-paper-plane cursor-pointer" onclick="sharePost('${p.desc}')"></i>
+                                    </div>
+                                    <i class="fa-regular fa-bookmark"></i>
                                 </div>
-                                <p class="font-bold text-sm">${p.likes?.length || 0} beğenme</p>
-                                <p class="text-sm"><span class="font-bold">${p.author}</span> ${p.desc}</p>
-                                <div id="comments-${d.id}" class="mt-2 space-y-1">
-                                    ${p.comments?.slice(-2).map(c => `<p class="text-xs"><b>${c.user}:</b> ${c.text}</p>`).join('')}
-                                </div>
-                                <div class="mt-3 flex gap-2">
-                                    <input type="text" id="inp-${d.id}" placeholder="Yorum ekle..." class="text-xs w-full outline-none bg-transparent">
-                                    <button onclick="addComment('${d.id}')" class="text-blue-500 text-xs font-bold">Paylaş</button>
+                                <p class="font-bold text-sm mb-2">${p.likes?.length || 0} beğenme</p>
+                                <p class="text-sm leading-relaxed"><span class="font-bold mr-2">${p.author}</span>${p.desc}</p>
+                                
+                                <div class="mt-4 border-t pt-3 dark:border-zinc-800">
+                                    <div id="comments-${docSnap.id}" class="space-y-2 mb-3">
+                                        ${p.comments?.map(c => `<p class="text-xs"><b>${c.user}</b> ${c.text}</p>`).join('')}
+                                    </div>
+                                    <div class="flex gap-2 items-center">
+                                        <input type="text" id="comm-${docSnap.id}" placeholder="Yorum ekle..." class="text-sm flex-1 bg-transparent outline-none">
+                                        <button onclick="addComment('${docSnap.id}')" class="text-blue-500 font-bold text-sm">Paylaş</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>`;
@@ -205,22 +261,24 @@
             });
         }
 
-        window.handleLike = async (id, likes) => {
+        window.likePost = async (id, likes) => {
             const ref = doc(db, "posts", id);
-            const uid = auth.currentUser.uid;
-            likes?.includes(uid) ? await updateDoc(ref, { likes: arrayRemove(uid) }) : await updateDoc(ref, { likes: arrayUnion(uid) });
+            likes?.includes(auth.currentUser.uid) ? await updateDoc(ref, { likes: arrayRemove(auth.currentUser.uid) }) : await updateDoc(ref, { likes: arrayUnion(auth.currentUser.uid) });
         };
 
         window.addComment = async (id) => {
-            const text = document.getElementById('inp-'+id).value;
-            if(!text) return;
+            const inp = document.getElementById('comm-'+id);
+            if(!inp.value) return;
             await updateDoc(doc(db, "posts", id), {
-                comments: arrayUnion({ user: auth.currentUser.displayName, text: text })
+                comments: arrayUnion({ user: auth.currentUser.displayName, text: inp.value })
             });
-            document.getElementById('inp-'+id).value = '';
+            inp.value = '';
         };
 
-        window.shareWhatsapp = (text) => window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent('Hayravesile Paylaşımı: ' + text)}`);
+        window.sharePost = (desc) => {
+            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent("Hayravesile'de yeni bir iyilik: " + desc)}`;
+            window.open(url, '_blank');
+        };
     </script>
 </body>
 </html>
