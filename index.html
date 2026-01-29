@@ -12,90 +12,97 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        :root { --hv: #10b981; --bg: #000; --card: #0a0a0c; --border: #161618; }
+        :root { --hv: #10b981; --bg: #000; --card: #0a0a0b; --border: #161618; }
         * { margin:0; padding:0; box-sizing:border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: var(--bg); color: white; overflow-x: hidden; }
+        body { background: var(--bg); color: white; }
         
-        .hv-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; margin-bottom: 12px; padding: 15px; width: 100%; }
-        .nav-dock { position: fixed; bottom: 0; left: 0; width: 100%; background: #000; border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; padding: 15px; z-index: 9000; }
+        .hv-card { background: var(--card); border-bottom: 1px solid var(--border); padding: 15px; width: 100%; }
+        .nav-dock { position: fixed; bottom: 0; left: 0; width: 100%; background: #000; border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 15px; z-index: 9000; }
         
         .full-page { position: fixed; inset: 0; background: #000; z-index: 9500; display: none; flex-direction: column; padding: 20px; }
-        .tab-active { display: block; }
-        .hidden { display: none; }
+        .badge-admin { color: #fbbf24; font-size: 10px; font-weight: 900; border: 1px solid #fbbf24; padding: 1px 6px; border-radius: 4px; margin-top: 5px; display: inline-block; }
+        .badge-user { color: #666; font-size: 10px; font-weight: 900; border: 1px solid #333; padding: 1px 6px; border-radius: 4px; margin-top: 5px; display: inline-block; }
         
-        video, .post-media { width: 100%; border-radius: 12px; margin-top: 10px; background: #000; }
-        .small-text { font-size: 13px; line-height: 1.4; color: #d1d1d1; }
-        .user-tag { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--hv); }
+        .small-text { font-size: 13px; line-height: 1.4; color: #efefef; }
+        .bio-text { font-size: 11px; color: #71717a; margin-top: 2px; }
         
-        .search-item { background: #0a0a0c; border: 1px solid #161618; border-radius: 15px; padding: 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+        input, textarea { background: #111 !important; border: 1px solid #222 !important; color: white !important; }
     </style>
 </head>
 <body>
 
     <header class="sticky top-0 z-[8000] bg-black border-b border-white/5 p-4 flex justify-between items-center">
-        <h1 class="text-lg font-black text-emerald-500 tracking-tighter">HAYRA VESİLE</h1>
+        <h1 class="text-lg font-black text-emerald-500" onclick="showTab('feed')">HAYRA VESİLE</h1>
         <div id="u-top" class="w-8 h-8 rounded-full overflow-hidden border border-emerald-500/20" onclick="showTab('profile')"></div>
     </header>
 
-    <main class="p-2 pb-24">
+    <main class="pb-24">
         <div id="tab-feed" class="tab-page">
             <div id="feed-items"></div>
         </div>
 
-        <div id="tab-users" class="tab-page hidden">
-            <input type="text" id="search-input" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 mb-4 outline-none text-sm" placeholder="Kişi ara veya mesajlaş...">
-            <div id="user-list"></div>
+        <div id="tab-users" class="tab-page hidden p-4">
+            <input type="text" id="search-input" class="w-full rounded-xl p-3 mb-4 outline-none text-sm" placeholder="Kişi ara...">
+            <div id="user-list" class="space-y-2"></div>
         </div>
 
         <div id="tab-profile" class="tab-page hidden">
-            <div class="text-center py-6 bg-zinc-900/30 rounded-3xl border border-white/5 mb-4">
-                <img id="p-img" class="w-20 h-20 mx-auto rounded-full border-2 border-emerald-500 p-1 mb-3">
-                <h2 id="p-name" class="font-black text-xl">...</h2>
-                <div class="flex justify-center gap-6 mt-4">
-                    <div class="text-center"><p id="s-p" class="font-bold">0</p><span class="text-[9px] opacity-40 uppercase">Post</span></div>
-                    <div class="text-center"><p id="s-l" class="font-bold">0</p><span class="text-[9px] opacity-40 uppercase">Beğeni</span></div>
+            <div class="p-6 border-b border-white/5 bg-zinc-900/20">
+                <div class="flex items-start gap-5">
+                    <div class="text-center">
+                        <img id="p-img" class="w-20 h-20 rounded-2xl border-2 border-emerald-500 p-1 mb-1 object-cover">
+                        <div id="p-rank"></div>
+                    </div>
+                    <div class="flex-1">
+                        <h2 id="p-name" class="font-black text-xl">...</h2>
+                        <p id="p-bio-show" class="text-xs text-zinc-500 mt-1">Biyografi yok.</p>
+                        <a id="p-link-show" href="#" target="_blank" class="text-[10px] text-emerald-500 font-bold block mt-1"></a>
+                        <div class="flex gap-4 mt-3">
+                            <div class="text-center"><p id="s-p" class="font-bold text-sm">0</p><span class="text-[9px] opacity-40 uppercase font-black">Post</span></div>
+                            <div class="text-center"><p id="s-l" class="font-bold text-sm">0</p><span class="text-[9px] opacity-40 uppercase font-black">Beğeni</span></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="p-4 space-y-2 mt-4">
-                    <input type="text" id="b-in" class="w-full bg-black border border-white/10 p-2 rounded-lg text-xs" placeholder="Biyografi...">
-                    <input type="text" id="l-in" class="w-full bg-black border border-white/10 p-2 rounded-lg text-xs" placeholder="Link...">
-                    <button onclick="updateProfile()" class="w-full bg-emerald-500 text-black font-black py-2 rounded-lg text-xs">KAYDET</button>
+                <div class="mt-6 space-y-2">
+                    <input type="text" id="b-in" class="w-full p-2 rounded-lg text-xs" placeholder="Biyografini güncelle...">
+                    <input type="text" id="l-in" class="w-full p-2 rounded-lg text-xs" placeholder="Web siten (https://...)">
+                    <button onclick="updateProfile()" class="w-full bg-emerald-500 text-black font-black py-2 rounded-lg text-xs">PROFİLİ KAYDET</button>
                 </div>
             </div>
-            <div id="p-grid" class="grid grid-cols-3 gap-1"></div>
+            <div id="p-grid" class="grid grid-cols-3 gap-1 p-1"></div>
         </div>
     </main>
 
     <div id="page-post" class="full-page">
         <div class="flex justify-between items-center mb-8">
-            <button onclick="closeFullPage('page-post')" class="text-zinc-500">İptal</button>
-            <span class="font-black text-emerald-500">YENİ PAYLAŞIM</span>
-            <button id="btn-publish" class="bg-emerald-500 text-black px-5 py-1.5 rounded-full font-black text-sm">YAYINLA</button>
+            <button onclick="closeFullPage('page-post')" class="text-zinc-500 font-bold">İptal</button>
+            <button id="btn-publish" class="bg-emerald-500 text-black px-6 py-2 rounded-full font-black text-xs">YAYINLA</button>
         </div>
-        <textarea id="post-input" class="w-full bg-transparent text-xl font-bold outline-none h-40" placeholder="Hayra vesile olsun..."></textarea>
-        <input type="text" id="post-link" class="w-full bg-zinc-900 p-3 rounded-xl outline-none text-xs border border-zinc-800" placeholder="Medya Linki (İsteğe bağlı)">
+        <textarea id="post-input" class="w-full p-4 rounded-2xl text-lg font-bold outline-none h-48" placeholder="Hayra vesile bir mesaj..."></textarea>
+        <input type="text" id="post-link" class="w-full p-3 mt-4 rounded-xl outline-none text-xs" placeholder="Video veya Fotoğraf Linki">
     </div>
 
     <div id="page-chat" class="full-page">
         <div class="flex items-center gap-4 mb-4 border-b border-white/5 pb-4">
             <i class="fa-solid fa-arrow-left" onclick="closeFullPage('page-chat')"></i>
-            <img id="chat-pfp" class="w-8 h-8 rounded-full">
+            <img id="chat-pfp" class="w-8 h-8 rounded-full object-cover">
             <span id="chat-name" class="font-black text-sm">...</span>
         </div>
         <div id="chat-messages" class="flex-1 overflow-y-auto space-y-3 mb-4 p-2"></div>
         <div class="flex gap-2">
-            <input type="text" id="chat-input" class="flex-1 bg-zinc-900 p-3 rounded-xl outline-none text-sm" placeholder="Mesaj yaz...">
-            <button id="btn-send-msg" class="bg-emerald-500 text-black px-4 rounded-xl"><i class="fa-solid fa-paper-plane"></i></button>
+            <input type="text" id="chat-input" class="flex-1 p-3 rounded-xl outline-none text-sm" placeholder="Mesaj gönder...">
+            <button id="btn-send-msg" class="bg-emerald-500 text-black px-5 rounded-xl"><i class="fa-solid fa-paper-plane"></i></button>
         </div>
     </div>
 
     <nav class="nav-dock">
-        <i class="fa-solid fa-house text-xl text-emerald-500" onclick="showTab('feed')"></i>
-        <i class="fa-solid fa-magnifying-glass text-xl text-zinc-600" onclick="showTab('users')"></i>
-        <div class="w-10 h-10 bg-emerald-500 text-black rounded-xl flex items-center justify-center text-xl" onclick="openFullPage('page-post')">
-            <i class="fa-solid fa-plus"></i>
+        <i class="fa-solid fa-house text-xl" onclick="showTab('feed')"></i>
+        <i class="fa-solid fa-magnifying-glass text-xl" onclick="showTab('users')"></i>
+        <div class="w-10 h-10 bg-emerald-500 text-black rounded-xl flex items-center justify-center" onclick="openFullPage('page-post')">
+            <i class="fa-solid fa-plus text-xl"></i>
         </div>
-        <i class="fa-solid fa-comment text-xl text-zinc-600" onclick="showTab('users')"></i>
-        <i class="fa-solid fa-user text-xl text-zinc-600" onclick="showTab('profile')"></i>
+        <i class="fa-solid fa-comment text-xl" onclick="showTab('users')"></i>
+        <i class="fa-solid fa-user text-xl" onclick="showTab('profile')"></i>
     </nav>
 
     <script type="module">
@@ -121,9 +128,7 @@
                 me = u;
                 document.getElementById('u-top').innerHTML = `<img src="${u.photoURL}" class="w-full h-full object-cover">`;
                 await setDoc(doc(db, "users", u.uid), { name: u.displayName, pfp: u.photoURL }, { merge: true });
-                syncProfile();
-                loadFeed();
-                loadUsers();
+                syncProfile(); loadFeed(); loadUsers();
             } else { signInWithPopup(auth, new GoogleAuthProvider()); }
         });
 
@@ -135,57 +140,65 @@
         window.openFullPage = (id) => document.getElementById(id).style.display = 'flex';
         window.closeFullPage = (id) => document.getElementById(id).style.display = 'none';
 
-        // YAYINLA
+        // YAYINLA BUTONU (FIXED)
         document.getElementById('btn-publish').onclick = async () => {
             const txt = document.getElementById('post-input').value;
-            const link = document.getElementById('post-link').value;
+            const lnk = document.getElementById('post-link').value;
             if(!txt) return;
+            const btn = document.getElementById('btn-publish');
+            btn.disabled = true; btn.innerText = "...";
+            
             await addDoc(collection(db, "hv_posts"), {
-                text: txt, link: link || null, uid: me.uid, name: me.displayName, pfp: me.photoURL,
+                text: txt, link: lnk || null, uid: me.uid, name: me.displayName, pfp: me.photoURL,
                 likes: [], date: serverTimestamp()
             });
-            closeFullPage('page-post');
+            
+            btn.disabled = false; btn.innerText = "YAYINLA";
             document.getElementById('post-input').value = "";
+            closeFullPage('page-post');
         };
 
-        // AKIŞ VE BEĞENİ GERİ ALMA
         function loadFeed() {
             onSnapshot(query(collection(db, "hv_posts"), orderBy("date", "desc")), snap => {
                 const feed = document.getElementById('feed-items'), grid = document.getElementById('p-grid');
                 feed.innerHTML = ''; grid.innerHTML = '';
-                let lSum = 0, pSum = 0;
+                let lS = 0, pS = 0;
 
                 snap.forEach(d => {
                     const p = d.data(), pid = d.id;
                     const liked = p.likes?.includes(me.uid);
+                    const isAdmin = p.name === "Adil Hamza";
                     
                     feed.innerHTML += `
                         <div class="hv-card">
-                            <div class="flex justify-between items-center mb-2">
-                                <div class="flex items-center gap-2" onclick="startChat('${p.uid}', '${p.name}', '${p.pfp}')">
-                                    <img src="${p.pfp}" class="w-6 h-6 rounded-full">
-                                    <span class="user-tag">${p.name}</span>
+                            <div class="flex items-start gap-3 mb-3">
+                                <img src="${p.pfp}" class="w-9 h-9 rounded-full object-cover" onclick="startChat('${p.uid}', '${p.name}', '${p.pfp}')">
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs font-black uppercase text-emerald-500">${p.name}</span>
+                                        ${p.uid === me.uid || me.displayName === "Adil Hamza" ? `<i class="fa-solid fa-trash text-[10px] opacity-20" onclick="deletePost('${pid}')"></i>` : ''}
+                                    </div>
+                                    <span class="${isAdmin ? 'badge-admin' : 'badge-user'}">${isAdmin ? 'ADMIN' : 'ÜYE'}</span>
+                                    <p class="small-text font-bold mt-2">${p.text}</p>
                                 </div>
-                                ${p.uid === me.uid || me.displayName === "Adil Hamza" ? `<i class="fa-solid fa-trash text-[10px] opacity-20" onclick="deletePost('${pid}')"></i>` : ''}
                             </div>
-                            <p class="small-text font-semibold">${p.text}</p>
-                            ${p.link ? (p.link.includes('mp4') ? `<video src="${p.link}" controls></video>` : `<img src="${p.link}" class="post-media">`) : ''}
-                            <div class="flex gap-6 mt-4 opacity-80">
+                            ${p.link ? (p.link.includes('mp4') ? `<video src="${p.link}" controls class="w-full rounded-xl"></video>` : `<img src="${p.link}" class="w-full rounded-xl">`) : ''}
+                            <div class="flex gap-6 mt-4 opacity-50">
                                 <button onclick="handleLike('${pid}', ${JSON.stringify(p.likes)})">
-                                    <i class="fa-solid fa-heart ${liked ? 'text-red-500' : 'text-zinc-800'}"></i>
+                                    <i class="fa-solid fa-heart ${liked ? 'text-red-500 opacity-100' : ''}"></i>
                                     <span class="text-[10px] font-black ml-1">${p.likes?.length || 0}</span>
                                 </button>
-                                <i class="fa-solid fa-comment text-zinc-800" onclick="startChat('${p.uid}', '${p.name}', '${p.pfp}')"></i>
+                                <i class="fa-solid fa-comment" onclick="startChat('${p.uid}', '${p.name}', '${p.pfp}')"></i>
                             </div>
                         </div>`;
 
                     if(p.uid === me.uid) {
-                        pSum++; lSum += p.likes?.length || 0;
-                        grid.innerHTML += `<div class="bg-zinc-900 aspect-square border border-white/5 overflow-hidden p-2 text-[8px] opacity-30">${p.text}</div>`;
+                        pS++; lS += p.likes?.length || 0;
+                        grid.innerHTML += `<div class="bg-zinc-900 aspect-square border border-white/5 p-2 text-[8px] opacity-20 overflow-hidden">${p.text}</div>`;
                     }
                 });
-                document.getElementById('s-p').innerText = pSum;
-                document.getElementById('s-l').innerText = lSum;
+                document.getElementById('s-p').innerText = pS;
+                document.getElementById('s-l').innerText = lS;
             });
         }
 
@@ -195,23 +208,21 @@
                 await updateDoc(r, { likes: arrayRemove(me.uid) });
             } else {
                 await updateDoc(r, { likes: arrayUnion(me.uid) });
-                confetti({ particleCount: 40, spread: 50, origin: { y: 0.8 }, colors: ['#ef4444'] });
+                confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 }, colors:['#10b981','#ef4444'] });
             }
         };
 
-        // KİŞİLER & MESAJLAŞMA
         function loadUsers() {
             onSnapshot(collection(db, "users"), snap => {
-                const list = document.getElementById('user-list');
-                list.innerHTML = '';
+                const list = document.getElementById('user-list'); list.innerHTML = '';
                 snap.forEach(d => {
                     if(d.id === me.uid) return;
                     const u = d.data();
                     list.innerHTML += `
-                        <div class="search-item" onclick="startChat('${d.id}', '${u.name}', '${u.pfp}')">
-                            <img src="${u.pfp}" class="w-10 h-10 rounded-full border border-emerald-500/20">
-                            <div class="flex-1"><p class="font-black text-sm">${u.name}</p><p class="text-[10px] opacity-40">Mesaj göndermek için dokun</p></div>
-                            <i class="fa-solid fa-chevron-right opacity-20"></i>
+                        <div class="flex items-center gap-4 bg-zinc-900/50 p-3 rounded-2xl border border-white/5" onclick="startChat('${d.id}', '${u.name}', '${u.pfp}')">
+                            <img src="${u.pfp}" class="w-10 h-10 rounded-full object-cover">
+                            <div class="flex-1"><p class="font-black text-sm">${u.name}</p><p class="text-[10px] text-zinc-600">Mesaj yazmak için dokun</p></div>
+                            <i class="fa-solid fa-paper-plane text-emerald-500 opacity-50"></i>
                         </div>`;
                 });
             });
@@ -239,13 +250,9 @@
         document.getElementById('btn-send-msg').onclick = async () => {
             const input = document.getElementById('chat-input');
             if(!input.value) return;
-            await addDoc(collection(db, "chats", activeChatId, "messages"), {
-                t: input.value, s: me.uid, date: serverTimestamp()
-            });
+            await addDoc(collection(db, "chats", activeChatId, "messages"), { t: input.value, s: me.uid, date: serverTimestamp() });
             input.value = "";
         };
-
-        window.deletePost = async (id) => { if(confirm('Silinsin mi?')) await deleteDoc(doc(db, "hv_posts", id)); };
 
         async function syncProfile() {
             const s = await getDoc(doc(db, "users", me.uid));
@@ -253,6 +260,10 @@
                 const d = s.data();
                 document.getElementById('p-img').src = d.pfp;
                 document.getElementById('p-name').innerText = d.name;
+                document.getElementById('p-rank').innerHTML = `<span class="${d.name === 'Adil Hamza' ? 'badge-admin' : 'badge-user'}">${d.name === 'Adil Hamza' ? 'ADMIN' : 'ÜYE'}</span>`;
+                document.getElementById('p-bio-show').innerText = d.bio || "Biyografi yok.";
+                document.getElementById('p-link-show').innerText = d.link || "";
+                document.getElementById('p-link-show').href = d.link || "#";
                 document.getElementById('b-in').value = d.bio || "";
                 document.getElementById('l-in').value = d.link || "";
             }
@@ -263,8 +274,11 @@
                 bio: document.getElementById('b-in').value, 
                 link: document.getElementById('l-in').value 
             });
-            Swal.fire('Başarılı', 'Profil güncellendi!', 'success');
+            syncProfile();
+            Swal.fire({ title: 'Başarılı!', text: 'Profilin güncellendi.', icon: 'success', confirmButtonColor: '#10b981' });
         };
+
+        window.deletePost = async (id) => { if(confirm('Silinsin mi?')) await deleteDoc(doc(db, "hv_posts", id)); };
 
     </script>
 </body>
