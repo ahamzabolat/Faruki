@@ -3,58 +3,94 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-    <title>Hayravesile</title>
+    <title>Hayravesile Pro | Instagram Edition</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-        body { font-family: 'Inter', sans-serif; transition: 0.3s; }
-        .dark-mode { background-color: #0f172a !important; color: white; }
-        .dark-card { background-color: #1e293b !important; border-color: #334155 !important; color: white !important; }
-        .primary-green { color: #059669; }
-        .bg-primary { background-color: #059669; }
-        .nav-bottom { position: fixed; bottom: 0; width: 100%; max-width: 500px; left: 50%; transform: translateX(-50%); border-top: 1px solid #e2e8f0; background: white; z-index: 100; }
-        .dark-mode .nav-bottom { background: #1e293b; border-top: 1px solid #334155; }
-        .post-card { border-radius: 20px; overflow: hidden; border: 1px solid #f1f5f9; background: white; margin-bottom: 20px; }
+        /* GENEL AYARLAR */
+        * { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: #fafafa; transition: background 0.3s; }
+        
+        /* KARANLIK MOD (INSTAGRAM DARK) */
+        body.dark { background-color: #000 !important; color: #fff !important; }
+        .dark .bg-white { background-color: #000 !important; }
+        .dark .border-gray-200, .dark .border-gray-300 { border-color: #262626 !important; }
+        .dark .text-gray-500, .dark .text-gray-400 { color: #a8a8a8 !important; }
+
+        /* MASAÜSTÜ YAN MENÜ */
+        @media (min-width: 768px) {
+            .side-nav { width: 245px; position: fixed; height: 100vh; border-right: 1px solid #dbdbdb; padding: 25px 12px; }
+            .main-content { margin-left: 245px; padding-top: 30px; }
+            .mobile-nav { display: none; }
+            .post-wrapper { max-width: 470px; margin: 0 auto; }
+        }
+
+        /* MOBİL ALT MENÜ */
+        @media (max-width: 767px) {
+            .side-nav { display: none; }
+            .main-content { margin-bottom: 60px; }
+            .mobile-nav { position: fixed; bottom: 0; width: 100%; height: 50px; background: #fff; border-top: 1px solid #dbdbdb; display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
+            .dark .mobile-nav { background: #000; border-top: 1px solid #262626; }
+        }
+
+        /* POST TASARIMI */
+        .post-card { background: white; border: 1px solid #dbdbdb; margin-bottom: 20px; border-radius: 8px; }
+        .dark .post-card { background: black; border: 1px solid #262626; }
+        .post-image { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #efefef; }
+
+        /* BEĞENENLER PANELİ */
+        .likers-tooltip { position: relative; cursor: pointer; }
+        .likers-tooltip:hover .likers-list { display: block; }
+        .likers-list { 
+            display: none; position: absolute; bottom: 25px; left: 0; 
+            background: #262626; color: white; padding: 8px; border-radius: 8px; 
+            font-size: 11px; z-index: 50; width: 150px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
     </style>
 </head>
-<body class="bg-gray-50 pb-24">
+<body>
 
-    <nav class="bg-white border-b sticky top-0 z-50 px-4 py-3 flex justify-between items-center max-w-[500px] mx-auto transition-colors dark-card">
-        <div class="flex items-center gap-2">
-            <i class="fa-solid fa-leaf text-2xl primary-green"></i>
-            <h1 class="text-xl font-black primary-green tracking-tight">Hayravesile</h1>
-        </div>
-        <button onclick="toggleDark()" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-            <i class="fa-solid fa-moon text-gray-600 dark:text-gray-300" id="darkIcon"></i>
-        </button>
-    </nav>
+    <aside class="side-nav transition-all">
+        <h1 class="text-2xl font-bold italic mb-8 px-3 tracking-tighter">Hayravesile</h1>
+        <nav class="space-y-1">
+            <button onclick="location.reload()" class="w-full flex items-center gap-4 p-3 hover:bg-gray-100 dark:hover:bg-zinc-900 rounded-lg transition-all font-bold text-lg"><i class="fa-solid fa-house"></i> Ana Sayfa</button>
+            <button onclick="alert('Yakında!')" class="w-full flex items-center gap-4 p-3 hover:bg-gray-100 dark:hover:bg-zinc-900 rounded-lg transition-all text-lg"><i class="fa-solid fa-magnifying-glass"></i> Keşfet</button>
+            <button onclick="toggleDark()" class="w-full flex items-center gap-4 p-3 hover:bg-gray-100 dark:hover:bg-zinc-900 rounded-lg transition-all text-lg"><i class="fa-solid fa-moon"></i> Karanlık Mod</button>
+            <button onclick="openModal()" id="adminPlus" class="hidden w-full flex items-center gap-4 p-3 text-emerald-600 font-bold text-lg"><i class="fa-regular fa-square-plus"></i> Oluştur</button>
+        </nav>
+        <div id="userProfile" class="absolute bottom-10 left-3 right-3"></div>
+    </aside>
 
-    <main id="main-content" class="max-w-[500px] mx-auto p-4">
-        <div id="page-content">
-            <div id="feed" class="space-y-4">
-                <p class="text-center text-gray-400 py-10">Yükleniyor...</p>
+    <main class="main-content">
+        <div class="post-wrapper" id="feed">
+            <div class="flex flex-col items-center justify-center py-20 text-gray-400">
+                <i class="fa-solid fa-circle-notch animate-spin text-4xl mb-4"></i>
+                <p>Uygulama Hazırlanıyor...</p>
             </div>
         </div>
     </main>
 
-    <div class="nav-bottom flex justify-around py-4 text-2xl transition-colors">
-        <button onclick="renderFeed()" class="primary-green"><i class="fa-solid fa-house"></i></button>
-        <button onclick="renderExplore()" class="text-gray-400"><i class="fa-solid fa-magnifying-glass"></i></button>
-        <button onclick="openModal()" id="adminBtn" class="hidden text-gray-400"><i class="fa-regular fa-square-plus"></i></button>
-        <button onclick="renderNotifications()" class="text-gray-400"><i class="fa-regular fa-heart"></i></button>
-        <button onclick="renderProfile()" id="profileBtn" class="w-8 h-8 rounded-full border overflow-hidden">
-            <i class="fa-solid fa-user text-gray-300 mt-1"></i>
-        </button>
+    <div class="mobile-nav">
+        <i class="fa-solid fa-house text-xl" onclick="location.reload()"></i>
+        <i class="fa-solid fa-magnifying-glass text-xl"></i>
+        <i id="mobilePlus" class="fa-regular fa-square-plus text-xl hidden" onclick="openModal()"></i>
+        <i class="fa-regular fa-heart text-xl"></i>
+        <div id="mobileAvatar" class="w-7 h-7 rounded-full border overflow-hidden"></div>
     </div>
 
-    <div id="postModal" class="hidden fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white dark-card rounded-[30px] w-full max-w-sm p-6 shadow-2xl">
-            <h2 class="text-xl font-bold mb-4 text-center">İyilik Paylaş</h2>
-            <input type="text" id="imgUrl" placeholder="Fotoğraf Linki (İsteğe Bağlı)" class="w-full border rounded-xl p-3 mb-3 outline-none dark-card">
-            <textarea id="postText" placeholder="Mesajın..." class="w-full border rounded-xl p-3 h-24 mb-4 outline-none resize-none dark-card"></textarea>
-            <div class="flex gap-2">
-                <button onclick="closeModal()" class="flex-1 py-3 font-bold text-gray-400">İptal</button>
-                <button onclick="sendPost()" id="sendBtn" class="flex-[2] bg-primary text-white py-3 rounded-xl font-bold shadow-lg">Paylaş</button>
+    <div id="postModal" class="hidden fixed inset-0 bg-black/70 z-[2000] flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-zinc-900 w-full max-w-md rounded-2xl overflow-hidden shadow-2xl">
+            <div class="border-b dark:border-zinc-800 p-4 flex justify-between items-center font-bold">
+                <button onclick="closeModal()" class="text-gray-500 font-normal">İptal</button>
+                <span>Yeni Gönderi</span>
+                <button onclick="publishPost()" id="pubBtn" class="text-blue-500">Paylaş</button>
+            </div>
+            <div class="p-5">
+                <input type="text" id="imgUrl" placeholder="Fotoğraf Linki (URL)..." class="w-full bg-gray-50 dark:bg-zinc-800 border dark:border-zinc-700 p-3 rounded-lg mb-4 text-sm outline-none">
+                <textarea id="postText" placeholder="Bir açıklama yaz..." class="w-full h-32 bg-transparent outline-none resize-none text-sm"></textarea>
             </div>
         </div>
     </div>
@@ -62,7 +98,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, updateDoc, doc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDZO3lct-xzXAx79lbqgMP7s6WRCirWIHk",
@@ -77,83 +113,103 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- Fonksiyonlar ---
-        window.toggleDark = () => {
-            document.body.classList.toggle('dark-mode');
-            const icon = document.getElementById('darkIcon');
-            icon.classList.toggle('fa-moon');
-            icon.classList.toggle('fa-sun');
-        };
-
+        // --- UI KONTROLLERİ ---
+        window.toggleDark = () => document.body.classList.toggle('dark');
         window.openModal = () => document.getElementById('postModal').classList.remove('hidden');
         window.closeModal = () => document.getElementById('postModal').classList.add('hidden');
 
-        // Sayfa Değiştirme
-        window.renderFeed = () => location.reload();
-        window.renderExplore = () => document.getElementById('page-content').innerHTML = '<div class="text-center py-20 font-bold">Keşfet Sayfası Yakında!</div>';
-        window.renderNotifications = () => document.getElementById('page-content').innerHTML = '<div class="text-center py-20 font-bold">Beğeni ve Bildirimler Yakında!</div>';
-        window.renderProfile = () => {
-            const u = auth.currentUser;
-            document.getElementById('page-content').innerHTML = `
-                <div class="text-center py-10">
-                    <img src="${u.photoURL}" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-emerald-500 p-1">
-                    <h2 class="text-2xl font-bold">${u.displayName}</h2>
-                    <p class="text-gray-500 mb-6">${u.email}</p>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-white dark-card p-4 rounded-2xl shadow-sm border border-emerald-50"><b>12</b><br>Hayır</div>
-                        <div class="bg-white dark-card p-4 rounded-2xl shadow-sm border border-emerald-50"><b>540</b><br>Puan</div>
-                    </div>
-                    <button class="mt-10 text-red-500 font-bold" onclick="auth.signOut().then(()=>location.reload())">Çıkış Yap</button>
-                </div>`;
-        };
-
+        // --- GİRİŞ VE YETKİ ---
         onAuthStateChanged(auth, user => {
             if(user) {
-                document.getElementById('profileBtn').innerHTML = `<img src="${user.photoURL}" class="w-full h-full object-cover">`;
-                if(user.email === "a.hamzabolat@gmail.com") document.getElementById('adminBtn').classList.remove('hidden');
+                const avatarImg = `<img src="${user.photoURL}" class="w-full h-full object-cover">`;
+                document.getElementById('mobileAvatar').innerHTML = avatarImg;
+                document.getElementById('userProfile').innerHTML = `
+                    <div class="flex items-center gap-3 p-3 bg-gray-100 dark:bg-zinc-900 rounded-xl">
+                        <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-emerald-500">${avatarImg}</div>
+                        <div class="overflow-hidden"><p class="font-bold text-sm truncate">${user.displayName}</p></div>
+                    </div>`;
+                if(user.email === "a.hamzabolat@gmail.com") {
+                    document.getElementById('adminPlus').classList.remove('hidden');
+                    document.getElementById('mobilePlus').classList.remove('hidden');
+                }
             } else {
                 signInWithPopup(auth, new GoogleAuthProvider());
             }
         });
 
-        window.sendPost = async () => {
+        // --- PAYLAŞIM SİSTEMİ ---
+        window.publishPost = async () => {
             const url = document.getElementById('imgUrl').value;
-            const msg = document.getElementById('postText').value;
-            if(!msg) return alert("Mesaj yazmalısın!");
+            const text = document.getElementById('postText').value;
+            if(!text) return alert("Boş içerik paylaşamazsın!");
+            
+            document.getElementById('pubBtn').innerText = "...";
             await addDoc(collection(db, "posts"), {
-                img: url || null, text: msg, author: auth.currentUser.displayName,
-                avatar: auth.currentUser.photoURL, likes: 0, date: serverTimestamp()
+                img: url || null, text, author: auth.currentUser.displayName,
+                avatar: auth.currentUser.photoURL, uid: auth.currentUser.uid,
+                likedBy: [], createdAt: serverTimestamp()
             });
             closeModal();
+            document.getElementById('imgUrl').value = "";
+            document.getElementById('postText').value = "";
+            document.getElementById('pubBtn').innerText = "Paylaş";
         };
 
-        window.likePost = async (id) => {
-            await updateDoc(doc(db, "posts", id), { likes: increment(1) });
+        // --- TEKİL BEĞENİ VE KİM BEĞENDİ SİSTEMİ ---
+        window.toggleLike = async (postId, likedBy) => {
+            const user = auth.currentUser;
+            if(!user) return;
+            const postRef = doc(db, "posts", postId);
+            const myLikeData = { uid: user.uid, name: user.displayName };
+            
+            const alreadyLiked = likedBy.some(l => l.uid === user.uid);
+            if(alreadyLiked) {
+                await updateDoc(postRef, { likedBy: arrayRemove(likedBy.find(l => l.uid === user.uid)) });
+            } else {
+                await updateDoc(postRef, { likedBy: arrayUnion(myLikeData) });
+            }
         };
 
-        // Veri Akışı
-        onSnapshot(query(collection(db, "posts"), orderBy("date", "desc")), snap => {
-            const f = document.getElementById('feed');
-            f.innerHTML = '';
-            snap.forEach(d => {
-                const p = d.data();
-                f.innerHTML += `
-                    <div class="post-card transition-colors dark-card">
-                        <div class="p-4 flex items-center gap-3">
-                            <img src="${p.avatar}" class="w-8 h-8 rounded-full">
-                            <span class="font-bold text-sm">${p.author}</span>
+        // --- AKIŞ VE LİSTELEME ---
+        onSnapshot(query(collection(db, "posts"), orderBy("createdAt", "desc")), snap => {
+            const feed = document.getElementById('feed');
+            feed.innerHTML = '';
+            snap.forEach(docSnap => {
+                const p = docSnap.data();
+                const isLiked = p.likedBy?.some(l => l.uid === auth.currentUser?.uid);
+                const likerNames = p.likedBy?.length > 0 ? p.likedBy.map(l => l.name).join("<br>") : "İlk beğenen sen ol!";
+
+                feed.innerHTML += `
+                    <article class="post-card transition-all">
+                        <div class="flex items-center p-3 gap-3">
+                            <div class="w-8 h-8 rounded-full overflow-hidden border border-emerald-500">
+                                <img src="${p.avatar}" class="w-full h-full">
+                            </div>
+                            <span class="font-bold text-sm tracking-tight">${p.author}</span>
                         </div>
-                        ${p.img ? `<img src="${p.img}" class="w-full max-h-96 object-cover">` : ''}
-                        <div class="p-5">
-                            <div class="flex gap-4 text-2xl mb-3">
-                                <button onclick="likePost('${d.id}')" class="hover:scale-110 transition-transform"><i class="fa-regular fa-heart"></i></button>
+                        
+                        ${p.img ? `<img src="${p.img}" class="post-image" ondblclick="toggleLike('${docSnap.id}', ${JSON.stringify(p.likedBy).replace(/"/g, '&quot;')})">` : ''}
+                        
+                        <div class="p-3">
+                            <div class="flex gap-4 text-2xl mb-2">
+                                <button onclick="toggleLike('${docSnap.id}', ${JSON.stringify(p.likedBy).replace(/"/g, '&quot;')})">
+                                    <i class="${isLiked ? 'fa-solid fa-heart text-red-500' : 'fa-regular fa-heart'}"></i>
+                                </button>
                                 <i class="fa-regular fa-comment"></i>
                                 <i class="fa-regular fa-paper-plane"></i>
                             </div>
-                            <p class="font-bold text-sm mb-2">${p.likes || 0} beğeni</p>
-                            <p class="text-sm leading-relaxed"><span class="font-bold">${p.author}</span> ${p.text}</p>
+                            
+                            <div class="likers-tooltip">
+                                <p class="font-bold text-sm mb-1">${p.likedBy?.length || 0} beğenme</p>
+                                <div class="likers-list">${likerNames}</div>
+                            </div>
+                            
+                            <div class="text-sm leading-tight">
+                                <span class="font-bold mr-2">${p.author}</span> ${p.text}
+                            </div>
+                            <p class="text-[10px] text-gray-400 mt-2 uppercase tracking-widest">Az önce</p>
                         </div>
-                    </div>`;
+                    </article>`;
             });
         });
     </script>
