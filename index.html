@@ -255,3 +255,28 @@
     </script>
 </body>
 </html>
+<div id="auth-gate" class="fixed inset-0 bg-black z-[20000] flex flex-col items-center p-6 text-center">
+    <div class="w-full max-w-md flex flex-col items-center py-10">
+        
+        <img src="https://raw.githubusercontent.com/ahamzabolat/Hayravesile/main/Logo.png.png" 
+             alt="Logo" 
+             class="w-40 h-auto mb-8 object-contain rounded-3xl shadow-2xl">
+        
+        <div class="auth-card w-full">
+            <input type="text" id="auth-nick" class="auth-input" placeholder="Kullanıcı Adı (Kayıt)">
+            <input type="email" id="auth-mail" class="auth-input" placeholder="E-posta">
+            <input type="password" id="auth-pass" class="auth-input" placeholder="Şifre">
+            <button onclick="Auth.action()" class="auth-btn uppercase mb-4">Giriş / Kayıt</button>
+            <div class="text-zinc-600 font-bold text-xs mb-4">VEYA</div>
+            <button onclick="Auth.login()" class="w-full bg-white text-black py-4 rounded-[20px] font-black flex items-center justify-center gap-2">
+                <i class="fa-brands fa-google"></i> Google ile Devam Et
+            </button>
+        </div>
+
+        <p class="text-zinc-500 text-[10px] mt-8 font-bold uppercase tracking-widest pb-10">
+            Hayra vesile olan, yapan gibidir.
+        </p>
+    </div>
+</div>
+#auth-gate { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+#auth-gate::-webkit-scrollbar { display: none; }
