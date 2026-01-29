@@ -23,11 +23,14 @@
 
         .post-card { border-radius: 35px; padding: 25px; margin: 15px; border: 1px solid rgba(255,255,255,0.05); position: relative; }
         
-        /* AUTH TASARIMI - APK DOSTU */
+        /* AUTH TASARIMI */
         .auth-card { background: #0a0a0b; border: 1px solid #1e1e21; border-radius: 40px; width: 100%; max-width: 380px; padding: 30px; }
         .auth-input { background: #18181b; border: 1px solid #27272a; border-radius: 20px; padding: 18px; width: 100%; color: white; outline: none; margin-bottom: 12px; font-weight: 600; }
         .auth-input:focus { border-color: var(--hv); }
         .auth-btn { background: var(--hv); color: black; font-weight: 800; border-radius: 20px; padding: 18px; width: 100%; transition: 0.3s; }
+
+        /* FOTOĞRAF DÜZELTME (Taşmayı Önleyen CSS) */
+        img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
         .sidebar { position: fixed; left: -320px; top: 0; width: 300px; height: 100%; background: #070708; border-right: 1px solid #1a1a1c; z-index: 10000; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); padding: 50px 25px; }
         .sidebar.active { left: 0; box-shadow: 20px 0 100px #000; }
@@ -50,16 +53,15 @@
     <div id="auth-gate" class="fixed inset-0 bg-black z-[20000] flex flex-col items-center justify-center p-6 text-center overflow-y-auto">
         <h1 class="stilli-logo text-6xl mb-10">İyilik</h1>
         <div class="auth-card">
-            <input type="text" id="auth-nick" class="auth-input" placeholder="Kullanıcı Adı">
+            <input type="text" id="auth-nick" class="auth-input" placeholder="Kullanıcı Adı (Kayıt için)">
             <input type="email" id="auth-mail" class="auth-input" placeholder="E-posta">
             <input type="password" id="auth-pass" class="auth-input" placeholder="Şifre">
             <button onclick="Auth.action()" class="auth-btn uppercase mb-4">Giriş / Kayıt</button>
             <div class="text-zinc-600 font-bold text-xs mb-4">VEYA</div>
             <button onclick="Auth.login()" class="w-full bg-white text-black py-4 rounded-[20px] font-black flex items-center justify-center gap-2">
-                <i class="fa-brands fa-google"></i> Google ile Devam Et
+                <i class="fa-brands fa-google"></i> Google
             </button>
         </div>
-        <p class="text-zinc-500 text-[10px] mt-6 font-bold uppercase tracking-widest">Hayra vesile olan, yapan gibidir.</p>
     </div>
 
     <aside id="sidebar" class="sidebar flex flex-col">
@@ -71,21 +73,21 @@
             <div class="h-px bg-zinc-900 my-4"></div>
             <div class="p-4 rounded-2xl flex items-center gap-4 text-blue-400 font-bold" onclick="UI.open('info-modal')"><i class="fa-solid fa-circle-info"></i> Uygulama Bilgisi</div>
         </nav>
-        <button onclick="Auth.logout()" class="text-red-500/40 text-[10px] font-black uppercase mb-4 tracking-widest">Oturumu Kapat</button>
+        <button onclick="Auth.logout()" class="text-red-500/40 text-[10px] font-black uppercase mb-4">Çıkış Yap</button>
     </aside>
 
     <div id="app" class="flex-1 flex flex-col" style="display: none;">
         <header class="h-20 px-6 border-b border-zinc-900 flex justify-between items-center bg-black/60 backdrop-blur-xl">
             <button onclick="UI.side()" class="text-emerald-500 text-2xl"><i class="fa-solid fa-bars-staggered"></i></button>
             <h1 class="stilli-logo text-2xl">Hayra Vesile</h1>
-            <div id="u-pfp" class="w-10 h-10 rounded-xl overflow-hidden bg-emerald-500 flex items-center justify-center font-bold text-black" onclick="UI.tab('profile')"></div>
+            <div id="u-pfp" class="w-10 h-10 rounded-xl overflow-hidden bg-emerald-500 flex items-center justify-center font-bold text-black border border-white/10" onclick="UI.tab('profile')"></div>
         </header>
 
         <main class="scroller">
             <div id="tab-feed"><div id="post-list"></div></div>
             <div id="tab-users" class="hidden p-6"><h2 class="text-2xl font-black mb-8 text-emerald-500">İyilik Elçileri</h2><div id="user-list"></div></div>
             <div id="tab-profile" class="hidden p-8 flex flex-col items-center">
-                <div id="p-img-box" class="w-32 h-32 rounded-[40px] border-4 border-emerald-500 mb-6 flex items-center justify-center bg-zinc-900 text-4xl font-bold"></div>
+                <div id="p-img-box" class="w-32 h-32 rounded-[40px] border-4 border-emerald-500 mb-6 flex items-center justify-center bg-zinc-900 text-4xl font-bold overflow-hidden"></div>
                 <h2 id="p-name" class="text-3xl font-black uppercase tracking-tighter">...</h2>
                 <div id="my-posts" class="w-full mt-10"></div>
             </div>
@@ -101,8 +103,7 @@
         </div>
         <div class="scroller space-y-6">
             <div class="bg-zinc-900/50 p-6 rounded-3xl border border-white/5">
-                <h3 class="text-white font-bold mb-2">Misyon</h3>
-                <p class="text-zinc-400">İyiliği paylaşarak çoğaltıyoruz.</p>
+                <p class="text-zinc-400">Bu platform iyiliği yaymak için tasarlandı.</p>
             </div>
         </div>
     </div>
@@ -141,7 +142,7 @@
         const app = initializeApp(config), auth = getAuth(app), db = getFirestore(app);
 
         let me = null, activeRoom = null, roomUnsub = null, selCol = "#0d0d0f";
-        const ADMIN_UID = "BURAYA_KENDI_UID_YAZ"; // Firebase Auth'tan aldığın kendi UID'ni buraya yapıştır.
+        const ADMIN_UID = "BURAYA_KENDI_UID_YAZ"; 
 
         window.Auth = {
             login: () => signInWithPopup(auth, new GoogleAuthProvider()),
@@ -149,17 +150,19 @@
                 const nick = document.getElementById('auth-nick').value.trim();
                 const mail = document.getElementById('auth-mail').value.trim();
                 const pass = document.getElementById('auth-pass').value.trim();
-                if(!mail || !pass) return Swal.fire('Hata','E-posta ve şifre boş bırakılamaz.','error');
+                if(!mail || !pass) return Swal.fire('Hata','E-posta ve şifre girin.','error');
                 
                 try {
                     await signInWithEmailAndPassword(auth, mail, pass);
                 } catch(e) {
                     if(nick) {
-                        const res = await createUserWithEmailAndPassword(auth, mail, pass);
-                        await updateProfile(res.user, { displayName: nick });
-                        location.reload();
+                        try {
+                            const res = await createUserWithEmailAndPassword(auth, mail, pass);
+                            await updateProfile(res.user, { displayName: nick });
+                            location.reload();
+                        } catch(err) { Swal.fire('Hata', 'Kayıt başarısız: ' + err.message, 'error'); }
                     } else {
-                        Swal.fire('Bilgi','Bu mail kayıtlı değil, kayıt için kullanıcı adı da girin.','info');
+                        Swal.fire('Bilgi','Bu e-posta kayıtlı değil. Kayıt olmak için Kullanıcı Adı da yazın.','question');
                     }
                 }
             },
@@ -170,28 +173,25 @@
             if(u) {
                 const userDoc = await getDoc(doc(db, "users", u.uid));
                 if(userDoc.exists() && userDoc.data().banned) {
-                    Swal.fire('Banlandınız','Erişiminiz kısıtlandı.','error');
+                    Swal.fire('Hesap Kısıtlandı','Hesabınız banlandı.','error');
                     Auth.logout(); return;
                 }
                 me = u;
                 document.getElementById('auth-gate').style.display = 'none';
                 document.getElementById('app').style.display = 'flex';
-                document.getElementById('u-pfp').innerHTML = u.photoURL ? `<img src="${u.photoURL}" class="w-full h-full object-cover">` : u.displayName.charAt(0);
-                await setDoc(doc(db, "users", u.uid), { name: u.displayName, pfp: u.photoURL || '', bio: "İyiliğe vesile oldu." }, { merge: true });
+                document.getElementById('u-pfp').innerHTML = u.photoURL ? `<img src="${u.photoURL}">` : u.displayName.charAt(0);
+                await setDoc(doc(db, "users", u.uid), { name: u.displayName, pfp: u.photoURL || '', bio: "İyiliğe vesile oldu.", active: true }, { merge: true });
                 Data.sync();
             }
         });
 
+        // Diğer Data ve UI fonksiyonları aynı...
         window.UI = {
             side: () => { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').style.display = document.getElementById('sidebar').classList.contains('active') ? 'block' : 'none'; },
             tab: (t) => { document.querySelectorAll('main > div').forEach(d => d.classList.add('hidden')); document.getElementById('tab-'+t).classList.remove('hidden'); UI.side(); if(t === 'profile') Data.syncProfile(); },
             open: (id) => document.getElementById(id).style.display = 'flex',
             close: (id) => { document.getElementById(id).style.display = 'none'; if(id === 'dm-modal' && roomUnsub) roomUnsub(); }
         };
-
-        document.querySelectorAll('#color-opts > div').forEach(d => {
-            d.onclick = () => { document.querySelectorAll('#color-opts > div').forEach(x => x.classList.remove('border-2','border-white')); d.classList.add('border-2','border-white'); selCol = d.dataset.c; };
-        });
 
         window.Data = {
             sync: () => { Data.syncFeed(); Data.syncUsers(); },
@@ -207,7 +207,9 @@
                 return `
                     <div class="post-card" style="background: ${p.color || '#0d0d0f'}">
                         <div class="flex items-center gap-4 mb-5">
-                            <div class="w-12 h-12 rounded-2xl bg-emerald-500 flex items-center justify-center font-bold text-black overflow-hidden">${p.pfp ? `<img src="${p.pfp}" class="w-full h-full object-cover">` : p.name.charAt(0)}</div>
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-500 flex items-center justify-center text-black font-bold overflow-hidden">
+                                ${p.pfp ? `<img src="${p.pfp}">` : p.name.charAt(0)}
+                            </div>
                             <div class="flex-1"><span class="text-sm font-black uppercase text-white">${p.name}</span><span class="text-[10px] text-emerald-500 font-bold block uppercase">İyilik Elçisi</span></div>
                             ${(me.uid === p.uid || isAdmin) ? `<i onclick="Data.delPost('${id}')" class="fa-solid fa-trash text-white/20"></i>` : ''}
                         </div>
@@ -219,16 +221,19 @@
                     </div>`;
             },
             like: async (id, s) => { await updateDoc(doc(db, "posts", id), { likes: s ? arrayRemove(me.uid) : arrayUnion(me.uid) }); },
-            delPost: async (id) => { if(confirm("İyilik kaydı silinsin mi?")) await deleteDoc(doc(db, "posts", id)); },
+            delPost: async (id) => { if(confirm("Silinsin mi?")) await deleteDoc(doc(db, "posts", id)); },
             syncUsers: () => {
                 onSnapshot(collection(db, "users"), snap => {
                     const l = document.getElementById('user-list'); l.innerHTML = '';
                     snap.forEach(d => {
                         if(d.id === me.uid) return;
                         const u = d.data();
-                        l.innerHTML += `<div class="bg-zinc-900/40 p-6 rounded-[30px] flex items-center justify-between mb-4">
+                        l.innerHTML += `
+                        <div class="bg-zinc-900/40 p-6 rounded-[30px] flex items-center justify-between mb-4">
                             <div class="flex items-center gap-4" onclick="Data.openDm('${d.id}', '${u.name}')">
-                                <div class="w-14 h-14 rounded-2xl bg-zinc-800 flex items-center justify-center font-bold text-white overflow-hidden">${u.pfp ? `<img src="${u.pfp}" class="w-full h-full object-cover">` : u.name.charAt(0)}</div>
+                                <div class="w-14 h-14 rounded-2xl bg-zinc-800 flex items-center justify-center font-bold text-white overflow-hidden">
+                                    ${u.pfp ? `<img src="${u.pfp}">` : u.name.charAt(0)}
+                                </div>
                                 <span class="font-black text-sm uppercase">${u.name}</span>
                             </div>
                             ${me.uid === ADMIN_UID ? `<button onclick="Data.banUser('${d.id}')" class="text-red-500 text-xs font-bold">BAN</button>` : `<i class="fa-solid fa-paper-plane text-emerald-500"></i>`}
@@ -236,7 +241,7 @@
                     });
                 });
             },
-            banUser: async (uid) => { if(confirm("Kullanıcı banlansın mı?")) await updateDoc(doc(db, "users", uid), { banned: true }); },
+            banUser: async (uid) => { if(confirm("Banlansın mı?")) await updateDoc(doc(db, "users", uid), { banned: true }); },
             openDm: (tid, name) => {
                 activeRoom = [me.uid, tid].sort().join("_");
                 document.getElementById('dm-name').innerText = name;
@@ -249,7 +254,7 @@
                 });
             },
             syncProfile: () => {
-                document.getElementById('p-img-box').innerHTML = me.photoURL ? `<img src="${me.photoURL}" class="w-full h-full object-cover">` : me.displayName.charAt(0);
+                document.getElementById('p-img-box').innerHTML = me.photoURL ? `<img src="${me.photoURL}">` : me.displayName.charAt(0);
                 document.getElementById('p-name').innerText = me.displayName;
                 onSnapshot(query(collection(db, "posts"), orderBy("time", "desc")), snap => {
                     const l = document.getElementById('my-posts'); l.innerHTML = '';
